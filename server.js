@@ -1,15 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const Anthropic = require("@anthropic-ai/sdk");
 const path = require("path");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const JELLYFISH_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64">
 <defs>
@@ -175,14 +172,25 @@ HARD RULES:
 app.post("/generate", async (req, res) => {
   const { prompt } = req.body;
   if (!prompt) return res.status(400).json({ error: "Prompt required" });
+
   try {
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 4000,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: `Create an animated SVG icon of: ${prompt}` }]
-    });
-    let svg = message.content[0].text.trim();
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [{ parts: [{ text: `Create an animated SVG icon of: ${prompt}` }] }],
+          generationConfig: { maxOutputTokens: 4000, temperature: 0.7 }
+        })
+      }
+    );
+
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+
+    let svg = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
     svg = svg.replace(/^```[\w]*\n?/gm, "").replace(/\n?```$/gm, "").trim();
     const match = svg.match(/<svg[\s\S]*<\/svg>/i);
     res.json({ svg: match ? match[0] : svg });
