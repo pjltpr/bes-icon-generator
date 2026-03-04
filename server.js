@@ -174,23 +174,27 @@ app.post("/generate", async (req, res) => {
   if (!prompt) return res.status(400).json({ error: "Prompt required" });
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          contents: [{ parts: [{ text: `Create an animated SVG icon of: ${prompt}` }] }],
-          generationConfig: { maxOutputTokens: 4000, temperature: 0.7 }
-        })
-      }
-    );
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        max_tokens: 4000,
+        temperature: 0.7,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: `Create an animated SVG icon of: ${prompt}` }
+        ]
+      })
+    });
 
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
 
-    let svg = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    let svg = data.choices?.[0]?.message?.content?.trim() || "";
     svg = svg.replace(/^```[\w]*\n?/gm, "").replace(/\n?```$/gm, "").trim();
     const match = svg.match(/<svg[\s\S]*<\/svg>/i);
     res.json({ svg: match ? match[0] : svg });
