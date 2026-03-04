@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BES Icon Generator</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0A0A0A; font-family: Arial, sans-serif; color: #fff; }
+  @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:.8} }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  input::placeholder { color: #2A2A2A; }
+  input:focus { border-color: #341C12 !important; outline: none; }
+  .icon-card { animation: fadeIn 0.4s ease; transition: border-color 0.25s; }
+  .icon-card:hover { border-color: #341C12 !important; }
+  .suggestion-btn:hover { opacity: 1 !important; border-color: #341C12 !important; }
+  .export-btn:hover { background: #252525 !important; border-color: #333 !important; }
+  .export-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const SUGGESTIONS = [
+  "jellyfish", "wave", "spider web", "leaf", "rocket",
+  "flame", "snowflake", "compass", "eye", "feather",
+  "tornado", "coral"
+];
+
+function extractSVG(raw) {
+  raw = raw.replace(/^```[\w]*\n?/gm, "").replace(/\n?```$/gm, "").trim();
+  const match = raw.match(/<svg[\s\S]*<\/svg>/i);
+  return match ? match[0] : raw;
+}
+
+async function exportPNG(svgString, label) {
+  const SIZE = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = SIZE; canvas.height = SIZE;
+  const ctx = canvas.getContext("2d");
+  const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  await new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => { ctx.drawImage(img, 0, 0, SIZE, SIZE); URL.revokeObjectURL(url); res(); };
+    img.onerror = rej;
+    img.src = url;
+  });
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL("image/png");
+  a.download = `bes-icon-${label.replace(/\s+/g, "-")}.png`;
+  a.click();
+}
+
+async function exportGIF(svgString, label, onProgress) {
+  const SIZE = 128, FPS = 15, DURATION = 4000;
+  const TOTAL_FRAMES = Math.round((DURATION / 1000) * FPS);
+  const FRAME_DELAY = Math.round(1000 / FPS);
+  const frames = [];
+
+  for (let i = 0; i < TOTAL_FRAMES; i++) {
+    const t = (i / TOTAL_FRAMES) * DURATION;
+    const framedSVG = svgString
+      .replace(/animation-delay\s*:\s*([^;}"'\s]+)/g, (_, delay) => {
+        const delayMs = parseFloat(delay) * (delay.includes("ms") ? 1 : 1000);
+        return `animation-delay:${-(t - delayMs)}ms`;
+      })
+      .replace(/<style>/g, `<style>*{animation-play-state:paused!important;}`);
+    const canvas = document.createElement("canvas");
+    canvas.width = SIZE; canvas.height = SIZE;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#0a0a0a"; ctx.fillRect(0, 0, SIZE, SIZE);
+    const blob = new Blob([framedSVG], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    await new Promise((res) => {
+      const img = new Image();
+      img.onload = () => { ctx.drawImage(img, 0, 0, SIZE, SIZE); URL.revokeObjectURL(url); res(); };
+      img.onerror = () => res();
+      img.src = url;
+    });
+    frames.push(ctx.getImageData(0, 0, SIZE, SIZE).data);
+    if (onProgress) onProgress(Math.round((i / TOTAL_FRAMES) * 80));
+  }
+
+  if (onProgress) onProgress(85);
+
+  function lzw(pixels, minBits) {
+    const clear = 1 << minBits, eoi = clear + 1;
+    let bits = minBits + 1, next = eoi + 1;
+    const codes = new Map();
+    for (let i = 0; i < clear; i++) codes.set('' + i, i);
+    let buf = 0, bufLen = 0;
+    const bytes = [];
+    const emit = v => {
+      buf |= v << bufLen; bufLen += bits;
+      while (bufLen >= 8) { bytes.push(buf & 0xff); buf >>= 8; bufLen -= 8; }
+      if (next >= (1 << bits) && bits < 12) bits++;
+    };
+    emit(clear);
+    let str = '' + pixels[0];
+    for (let i = 1; i < pixels.length; i++) {
+      const ext = str + ',' + pixels[i];
+      if (codes.has(ext)) { str = ext; continue; }
+      emit(codes.get(str));
+      if (next < 4096) { codes.set(ext, next++); }
+      else { emit(clear); bits = minBits+1; next = eoi+1; codes.clear(); for(let j=0;j<clear;j++) codes.set(''+j,j); }
+      str = '' + pixels[i];
+    }
+    emit(codes.get(str));
+    emit(eoi);
+    if (bufLen > 0) bytes.push(buf & 0xff);
+    const out = [minBits];
+    for (let i = 0; i < bytes.length; i += 255) {
+      const chunk = bytes.slice(i, i+255);
+      out.push(chunk.length, ...chunk);
+    }
+    out.push(0);
+    return out;
+  }
+
+  const W = SIZE, H = SIZE, delay = Math.round(FRAME_DELAY / 10);
+  const w2 = v => [v & 0xff, (v >> 8) & 0xff];
+  const gif = [];
+  const p = (...b) => b.forEach(v => gif.push(v));
+  p(0x47,0x49,0x46,0x38,0x39,0x61);
+  p(...w2(W), ...w2(H));
+  p(0xf7, 0, 0);
+  for (let i = 0; i < 256; i++) p(i, i, i);
+  p(0x21,0xff,0x0b,78,69,84,83,67,65,80,69,50,46,48,3,1,0,0,0);
+  for (const rgba of frames) {
+    const idx = new Uint8Array(W * H);
+    for (let i = 0; i < W * H; i++) {
+      const r = rgba[i*4], g = rgba[i*4+1], b = rgba[i*4+2];
+      idx[i] = Math.round(0.299*r + 0.587*g + 0.114*b);
+    }
+    p(0x21,0xf9,0x04,0x00,...w2(delay),0,0);
+    p(0x2c,...w2(0),...w2(0),...w2(W),...w2(H),0x00);
+    p(...lzw(idx, 8));
+  }
+  p(0x3b);
+
+  if (onProgress) onProgress(98);
+  const blob = new Blob([new Uint8Array(gif)], { type: "image/gif" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `bes-icon-${label.replace(/\s+/g, "-")}.gif`;
+  a.click();
+  URL.revokeObjectURL(url);
+  if (onProgress) onProgress(100);
+}
+
+function App() {
+  const [prompt, setPrompt] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [icons, setIcons] = useState([]);
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(null);
+  const [exporting, setExporting] = useState({});
+  const [gifProgress, setGifProgress] = useState({});
+
+  async function generate(p) {
+    const q = (p || prompt).trim();
+    if (!q || loading) return;
+    setLoading(true); setError("");
+    try {
+      const res = await fetch("/generate", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ prompt: q })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      const svg = extractSVG(data.svg);
+      if (!svg.includes("<svg")) throw new Error("No SVG returned.");
+      setIcons(prev => [{ prompt: q, svg, id: Date.now() }, ...prev].slice(0, 24));
+      if (!p) setPrompt("");
+    } catch(e) {
+      setError(e.message || "Generation failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function copyIcon(svg, id) {
+    navigator.clipboard.writeText(svg).then(() => {
+      setCopied(id);
+      setTimeout(() => setCopied(null), 2000);
+    });
+  }
+
+  function downloadSVG(svg, label) {
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bes-icon-${label.replace(/\s+/g, "-")}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handlePNG(svg, id, label) {
+    setExporting(p => ({ ...p, [id]: "png" }));
+    try { await exportPNG(svg, label); }
+    catch(e) { setError("PNG export failed."); }
+    finally { setExporting(p => ({ ...p, [id]: null })); }
+  }
+
+  async function handleGIF(svg, id, label) {
+    setExporting(p => ({ ...p, [id]: "gif" }));
+    setGifProgress(p => ({ ...p, [id]: 0 }));
+    try {
+      await exportGIF(svg, label, pct => setGifProgress(p => ({ ...p, [id]: pct })));
+    } catch(e) {
+      setError("GIF export failed.");
+    } finally {
+      setExporting(p => ({ ...p, [id]: null }));
+      setGifProgress(p => ({ ...p, [id]: 0 }));
+    }
+  }
+
+  const btnBase = {
+    fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: 1.5,
+    textTransform: "uppercase", cursor: "pointer", border: "1px solid #222",
+    color: "#fff", padding: "7px 0", background: "#151515",
+    textAlign: "center", width: "100%"
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", padding: "48px" }}>
+      <p style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", opacity: 0.4, margin: "0 0 4px" }}>Butterfly Effect</p>
+      <p style={{ fontSize: 10, letterSpacing: 1, opacity: 0.2, margin: "0 0 40px" }}>Icon Generator — Hand Drawn / Animated / V.4.1</p>
+
+      <div style={{ display: "flex", gap: 12, maxWidth: 600, marginBottom: 14 }}>
+        <input
+          value={prompt}
+          onChange={e => setPrompt(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && generate()}
+          placeholder="Describe an icon — e.g. 'flame' or 'compass'..."
+          style={{ flex: 1, background: "#111", border: "1px solid #1E1E1E", color: "#fff", padding: "12px 16px", fontSize: 11, fontFamily: "Arial, sans-serif" }}
+        />
+        <button onClick={() => generate()} disabled={loading || !prompt.trim()}
+          style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase",
+            background: loading || !prompt.trim() ? "#111" : "#341C12",
+            border: `1px solid ${loading || !prompt.trim() ? "#222" : "#341C12"}`,
+            color: loading || !prompt.trim() ? "#444" : "#fff",
+            padding: "12px 24px", whiteSpace: "nowrap", cursor: loading || !prompt.trim() ? "not-allowed" : "pointer" }}
+        >{loading ? "Drawing..." : "Generate"}</button>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxWidth: 600, marginBottom: 36 }}>
+        {SUGGESTIONS.map(s => (
+          <button key={s} className="suggestion-btn" onClick={() => generate(s)} disabled={loading}
+            style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase",
+              cursor: "pointer", border: "1px solid #1E1E1E", color: "#fff", padding: "4px 10px",
+              background: "transparent", opacity: loading ? 0.15 : 0.4, transition: "all 0.2s" }}
+          >{s}</button>
+        ))}
+      </div>
+
+      {error && (
+        <div style={{ maxWidth: 600, marginBottom: 24, padding: "12px 16px", border: "1px solid #611E1F", background: "#0F0505", fontSize: 10, color: "#d44", letterSpacing: 0.5, lineHeight: 1.7 }}>
+          {error}
+        </div>
+      )}
+
+      {loading && (
+        <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", background: "#111", border: "1px solid #1E1E1E", padding: "36px 32px 24px", marginBottom: 32 }}>
+          <div style={{ width: 64, height: 64, background: "#181818", animation: "pulse 1.2s ease-in-out infinite" }} />
+          <p style={{ marginTop: 18, fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", opacity: 0.2 }}>Drawing...</p>
+        </div>
+      )}
+
+      {icons.length > 0 && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(168px, 1fr))", gap: 20 }}>
+          {icons.map(icon => {
+            const exp = exporting[icon.id];
+            const pct = gifProgress[icon.id] || 0;
+            return (
+              <div key={icon.id} className="icon-card"
+                style={{ background: "#111", border: "1px solid #1E1E1E", padding: "32px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}
+              >
+                <div style={{ width: 72, height: 72, display: "flex", alignItems: "center", justifyContent: "center" }}
+                  dangerouslySetInnerHTML={{ __html: icon.svg }} />
+                <p style={{ fontSize: 9, letterSpacing: 1.2, textTransform: "uppercase", opacity: 0.3, textAlign: "center", margin: 0, lineHeight: 1.6 }}>{icon.prompt}</p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, width: "100%" }}>
+                  <button className="export-btn" onClick={() => copyIcon(icon.svg, icon.id)}
+                    style={{ ...btnBase, background: copied === icon.id ? "#1E3325" : "#151515", borderColor: copied === icon.id ? "#2E5038" : "#222" }}
+                  >{copied === icon.id ? "Copied" : "Copy"}</button>
+                  <button className="export-btn" onClick={() => downloadSVG(icon.svg, icon.prompt)} style={btnBase}>SVG</button>
+                  <button className="export-btn" onClick={() => handlePNG(icon.svg, icon.id, icon.prompt)} disabled={!!exp}
+                    style={{ ...btnBase, background: exp === "png" ? "#1A1A2A" : "#151515" }}
+                  >{exp === "png" ? "Saving..." : "PNG"}</button>
+                  <button className="export-btn" onClick={() => handleGIF(icon.svg, icon.id, icon.prompt)} disabled={!!exp}
+                    style={{ ...btnBase, position: "relative", overflow: "hidden" }}
+                  >
+                    {exp === "gif" && <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: "#341C12", opacity: 0.5 }} />}
+                    <span style={{ position: "relative" }}>{exp === "gif" ? `${pct}%` : "GIF"}</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {icons.length === 0 && !loading && (
+        <p style={{ opacity: 0.08, fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase" }}>Icons will appear here.</p>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
