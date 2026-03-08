@@ -11,15 +11,6 @@ app.use(express.static("public"));
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
 
-// ── Strict sequential queue — one request at a time, 45s gap to stay under 12k TPM ──
-let requestQueue = Promise.resolve();
-function queueRequest(fn) {
-  requestQueue = requestQueue
-    .then(() => new Promise(resolve => setTimeout(resolve, 45000)))
-    .then(fn);
-  return requestQueue;
-}
-
 async function callGroq(systemPrompt, userPrompt, retries = 3) {
   for (let attempt = 0; attempt < retries; attempt++) {
     const response = await fetch(GROQ_API_URL, {
@@ -43,7 +34,7 @@ async function callGroq(systemPrompt, userPrompt, retries = 3) {
 
     if (response.status === 429) {
       const waitMatch = data.error?.message?.match(/try again in ([\d.]+)s/);
-      const waitMs = waitMatch ? Math.ceil(parseFloat(waitMatch[1]) * 1000) + 1000 : 60000;
+      const waitMs = waitMatch ? Math.ceil(parseFloat(waitMatch[1]) * 1000) + 500 : 15000;
       console.log(`[groq] Rate limited, waiting ${waitMs}ms before retry ${attempt + 1}/${retries}`);
       await new Promise(r => setTimeout(r, waitMs));
       continue;
@@ -57,7 +48,7 @@ async function callGroq(systemPrompt, userPrompt, retries = 3) {
     if (!text) throw new Error("Empty response from Groq.");
     return text;
   }
-  throw new Error("Rate limit exceeded after retries. Please wait a moment and try again.");
+  throw new Error("Rate limit exceeded after retries. Please try again in a moment.");
 }
 
 app.post("/api/generate", async (req, res) => {
@@ -72,10 +63,10 @@ app.post("/api/generate", async (req, res) => {
     return res.status(500).json({ error: "GROQ_API_KEY is not configured on the server." });
   }
 
-  console.log(`[generate] queued: ${prompt.slice(0, 80)}`);
+  console.log(`[generate] ${prompt.slice(0, 80)}`);
 
   try {
-    const text = await queueRequest(() => callGroq(system, prompt));
+    const text = await callGroq(system, prompt);
     console.log(`[generate] success, length: ${text.length}`);
     res.json({ text });
   } catch (err) {
