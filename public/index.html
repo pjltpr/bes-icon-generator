@@ -1,322 +1,539 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>BES Icon Generator</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0A0A0A; font-family: Arial, sans-serif; color: #fff; }
-  @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:.8} }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-  input::placeholder { color: #2A2A2A; }
-  input:focus { border-color: #341C12 !important; outline: none; }
-  .icon-card { animation: fadeIn 0.4s ease; transition: border-color 0.25s; }
-  .icon-card:hover { border-color: #341C12 !important; }
-  .suggestion-btn:hover { opacity: 1 !important; border-color: #341C12 !important; }
-  .export-btn:hover { background: #252525 !important; border-color: #333 !important; }
-  .export-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0A0A0A;color:#fff;font-family:Arial,sans-serif;min-height:100vh;padding:48px;}
+  input{background:#111;border:1px solid #222;color:#fff;padding:12px 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1px;outline:none;width:100%;}
+  button{font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 8px;}
+  button:disabled{opacity:0.4;cursor:not-allowed;}
+  .x-btn{font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 8px;}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState } = React;
 
-const SUGGESTIONS = [
-  "jellyfish", "wave", "spider web", "leaf", "rocket",
-  "flame", "snowflake", "compass", "eye", "feather",
-  "tornado", "coral"
-];
+<div id="app"></div>
 
-function extractSVG(raw) {
-  raw = raw.replace(/^```[\w]*\n?/gm, "").replace(/\n?```$/gm, "").trim();
-  const match = raw.match(/<svg[\s\S]*<\/svg>/i);
-  return match ? match[0] : raw;
+<script>
+// ── Math spiral ──
+function makeSpiral(cx,cy,turns,maxR,steps){var pts=[];for(var i=0;i<=steps;i++){var t=i/steps,a=t*turns*Math.PI*2-Math.PI/2,r=t*maxR;pts.push([cx+Math.cos(a)*r,cy+Math.sin(a)*r]);}return pts.map(function(p,i){return(i===0?'M':'L')+p[0].toFixed(2)+','+p[1].toFixed(2);}).join(' ');}
+function spiralDashLen(turns,maxR,steps){var pts=[];for(var i=0;i<=steps;i++){var t=i/steps,a=t*turns*Math.PI*2,r=t*maxR;pts.push([Math.cos(a)*r,Math.sin(a)*r]);}var len=0;for(var i=1;i<pts.length;i++){var dx=pts[i][0]-pts[i-1][0],dy=pts[i][1]-pts[i-1][1];len+=Math.sqrt(dx*dx+dy*dy);}return Math.ceil(len)+20;}
+var SP_CX=32,SP_CY=33,SP_TURNS=3.2,SP_R=26,SP_STEPS=180;
+var SP_D1=makeSpiral(SP_CX,SP_CY,SP_TURNS,SP_R,SP_STEPS);
+var SP_D2=makeSpiral(SP_CX,SP_CY,SP_TURNS,SP_R-0.8,SP_STEPS);
+var SP_D3=makeSpiral(SP_CX,SP_CY,SP_TURNS,SP_R-1.4,SP_STEPS);
+var SP_DASH=spiralDashLen(SP_TURNS,SP_R,SP_STEPS);
+var SPIRAL_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fsp" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.052" numOctaves="4" seed="14" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.4" xChannelSelector="R" yChannelSelector="G"/></filter><style>.sp1{stroke-dasharray:'+SP_DASH+';stroke-dashoffset:'+SP_DASH+';animation:spD 4s ease-in-out infinite}.sp2{stroke-dasharray:'+SP_DASH+';stroke-dashoffset:'+SP_DASH+';animation:spD 4s 0.3s ease-in-out infinite;opacity:0.52}.sp3{stroke-dasharray:'+SP_DASH+';stroke-dashoffset:'+SP_DASH+';animation:spD 4s 0.6s ease-in-out infinite;opacity:0.25}@keyframes spD{0%{stroke-dashoffset:'+SP_DASH+';opacity:0}10%{opacity:1}62%{stroke-dashoffset:0;opacity:1}80%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:'+SP_DASH+';opacity:0}}</style></defs><g filter="url(#fsp)"><path class="sp1" d="'+SP_D1+'" stroke="white" stroke-width="1.1" stroke-linecap="round" fill="none"/><path class="sp2" d="'+SP_D2+'" stroke="white" stroke-width="0.6" stroke-linecap="round" fill="none"/><path class="sp3" d="'+SP_D3+'" stroke="white" stroke-width="0.32" stroke-linecap="round" fill="none"/><circle cx="'+SP_CX+'" cy="'+SP_CY+'" r="1.3" fill="white" opacity="0.85"/></g></svg>';
+var ATTRACTOR_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fa" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/></filter><style>.ap1{stroke-dasharray:300;stroke-dashoffset:300;animation:aD 3s ease-in-out infinite alternate}.ap2{stroke-dasharray:200;stroke-dashoffset:200;animation:aD 3s 0.4s ease-in-out infinite alternate;opacity:0.5}.ap3{stroke-dasharray:160;stroke-dashoffset:160;animation:aD 3s 0.8s ease-in-out infinite alternate;opacity:0.3}@keyframes aD{0%{stroke-dashoffset:300;opacity:0}20%{opacity:1}100%{stroke-dashoffset:0}}</style></defs><g filter="url(#fa)"><path class="ap1" d="M32 32 C20 20,8 24,10 34 C12 44,26 44,32 32 C38 20,52 18,54 28 C56 38,44 46,32 32" stroke="white" stroke-width="1" stroke-linecap="round"/><path class="ap2" d="M32 32 C22 22,12 28,14 36 C16 44,28 42,32 32 C36 22,48 20,50 30 C52 40,40 46,32 32" stroke="white" stroke-width="0.6" stroke-linecap="round"/><path class="ap3" d="M32 32 C24 24,16 30,18 38 C20 44,30 42,32 32 C34 24,44 22,46 30 C48 38,38 44,32 32" stroke="white" stroke-width="0.4" stroke-linecap="round"/><circle cx="32" cy="32" r="1.2" fill="white" opacity="0.6"/></g></svg>';
+var RIPPLE_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fr" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.1" xChannelSelector="R" yChannelSelector="G"/></filter><style>.r1{animation:rD 3s 0s ease-in-out infinite alternate}.r2{animation:rD 3s 0.6s ease-in-out infinite alternate}.r3{animation:rD 3s 1.2s ease-in-out infinite alternate}@keyframes rD{0%{opacity:0;transform:scale(0.5)}20%{opacity:1}100%{opacity:0.7;transform:scale(1)}}</style></defs><g filter="url(#fr)"><ellipse class="r3" cx="32" cy="32" rx="24" ry="18" stroke="white" stroke-width="0.5" fill="none" opacity="0.4"/><ellipse class="r2" cx="32" cy="32" rx="16" ry="12" stroke="white" stroke-width="0.65" fill="none" opacity="0.6"/><ellipse class="r1" cx="32" cy="32" rx="8" ry="6" stroke="white" stroke-width="0.8" fill="none"/><circle cx="32" cy="32" r="1.5" fill="white" opacity="0.8"/></g></svg>';
+var GRID_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fg" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="21" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter><style>.gl{stroke-dasharray:30;stroke-dashoffset:30}.g1{animation:gT 3s 0.00s ease-in-out infinite alternate}.g2{animation:gT 3s 0.15s ease-in-out infinite alternate}.g3{animation:gT 3s 0.30s ease-in-out infinite alternate}.g4{animation:gT 3s 0.45s ease-in-out infinite alternate}.g5{animation:gT 3s 0.60s ease-in-out infinite alternate}.g6{animation:gT 3s 0.75s ease-in-out infinite alternate}@keyframes gT{0%{stroke-dashoffset:30;opacity:0}30%{opacity:1}100%{stroke-dashoffset:0;opacity:0.85}}.sd{animation:dD 3s ease-in-out infinite alternate}.s1{animation-delay:0.8s}.s2{animation-delay:1.0s}.s3{animation-delay:1.2s}.s4{animation-delay:1.4s}.s5{animation-delay:1.6s}.s6{animation-delay:1.8s}.s7{animation-delay:2.0s}.s8{animation-delay:2.2s}.s9{animation-delay:2.4s}@keyframes dD{0%{opacity:0;transform:translate(3px,3px)}40%{opacity:0.9}100%{opacity:0.7;transform:translate(0,0)}}</style></defs><g filter="url(#fg)"><line class="gl g1" x1="8" y1="12" x2="28" y2="12" stroke="white" stroke-width="0.7"/><line class="gl g2" x1="8" y1="20" x2="28" y2="20" stroke="white" stroke-width="0.7"/><line class="gl g3" x1="8" y1="28" x2="24" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g4" x1="12" y1="8" x2="12" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g5" x1="20" y1="8" x2="20" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g6" x1="28" y1="8" x2="28" y2="24" stroke="white" stroke-width="0.7"/><circle class="sd s1" cx="38" cy="36" r="1.2" fill="white"/><circle class="sd s2" cx="46" cy="34" r="1.0" fill="white"/><circle class="sd s3" cx="54" cy="30" r="0.8" fill="white"/><circle class="sd s4" cx="36" cy="44" r="1.0" fill="white"/><circle class="sd s5" cx="44" cy="42" r="0.9" fill="white"/><circle class="sd s6" cx="52" cy="40" r="0.7" fill="white"/><circle class="sd s7" cx="42" cy="50" r="0.8" fill="white"/><circle class="sd s8" cx="50" cy="50" r="0.6" fill="white"/><circle class="sd s9" cx="56" cy="56" r="0.5" fill="white"/></g></svg>';
+var NETWORK_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fn" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter><style>.n1{stroke-dasharray:60;stroke-dashoffset:60;animation:nD 3.5s ease-in-out infinite}.n2{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.28s ease-in-out infinite}.n3{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.56s ease-in-out infinite}.n4{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.84s ease-in-out infinite}.n5{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 1.12s ease-in-out infinite}.n6{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.4s ease-in-out infinite;opacity:0.6}.n7{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.55s ease-in-out infinite;opacity:0.6}.n8{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.7s ease-in-out infinite;opacity:0.6}.n9{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.85s ease-in-out infinite;opacity:0.6}.nd{animation:ndF 3.5s ease-in-out infinite}@keyframes nD{0%{stroke-dashoffset:60;opacity:0}12%{opacity:1}65%{stroke-dashoffset:0;opacity:1}82%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:60;opacity:0}}@keyframes ndF{0%{opacity:0}15%{opacity:1}70%{opacity:1}85%{opacity:0}100%{opacity:0}}</style></defs><g filter="url(#fn)"><path class="n1" d="M32,32 Q22,24 13,20" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n2" d="M32,32 Q42,25 51,22" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n3" d="M32,32 Q20,40 11,45" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n4" d="M32,32 Q44,40 53,45" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n5" d="M32,32 Q33,18 33,7" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n6" d="M13,20 Q9,26 7,31" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n7" d="M51,22 Q55,28 57,33" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n8" d="M11,45 Q6,48 4,54" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n9" d="M53,45 Q58,48 60,54" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><circle class="nd" cx="32" cy="32" r="2" fill="white"/><circle class="nd" cx="13" cy="20" r="1.4" fill="white" style="animation-delay:0.28s"/><circle class="nd" cx="51" cy="22" r="1.4" fill="white" style="animation-delay:0.56s"/><circle class="nd" cx="11" cy="45" r="1.2" fill="white" style="animation-delay:0.84s"/><circle class="nd" cx="53" cy="45" r="1.2" fill="white" style="animation-delay:1.12s"/><circle class="nd" cx="33" cy="7" r="1.2" fill="white" style="animation-delay:1.12s"/></g></svg>';
+
+// ── Profile ──
+var DEFAULT_PROFILE={familyWeights:{spiral:1,ripple:1,attractor:1,network:1,grid:1},displacementScale:1.3,echoLayers:3,primaryStroke:1.1,animDuration:3,animStyle:{dashoffset:1,scale:0,translate:0},density:5,likedSubjects:[],dislikedSubjects:[],feedbackLog:[]};
+var profile=loadProfile();
+function loadProfile(){try{var s=localStorage.getItem('bes-icon-profile');return s?Object.assign({},DEFAULT_PROFILE,JSON.parse(s)):JSON.parse(JSON.stringify(DEFAULT_PROFILE));}catch(e){return JSON.parse(JSON.stringify(DEFAULT_PROFILE));}}
+function saveProfile(){try{localStorage.setItem('bes-icon-profile',JSON.stringify(profile));}catch(e){}}
+function resetProfile(){profile=JSON.parse(JSON.stringify(DEFAULT_PROFILE));saveProfile();renderMeter();}
+
+function parseSVGProfile(svg){
+  var dsm=svg.match(/scale="([\d.]+)"/),swm=svg.match(/stroke-width="([\d.]+)"/),adm=svg.match(/animation:\s*\w+\s+([\d.]+)s/);
+  var paths=(svg.match(/<(path|ellipse|line)[^>]*stroke/g)||[]).length;
+  var opacities=[];var re=/opacity[=:]["']?([\d.]+)/g,m;while((m=re.exec(svg))!==null){var v=parseFloat(m[1]);if(v<1&&v>0.1)opacities.push(v);}
+  var family=svg.includes('ellipse')?'ripple':(svg.match(/<line/g)||[]).length>3?'grid':(svg.match(/<path/g)||[]).length>4?'network':'attractor';
+  return{displacementScale:dsm?parseFloat(dsm[1]):1.3,primaryStroke:swm?parseFloat(swm[1]):1.0,animDuration:adm?parseFloat(adm[1]):3,density:paths,echoLayers:Math.max(2,opacities.length),animStyle:{dashoffset:svg.includes('stroke-dashoffset')?1:0,scale:svg.includes('scale(')?1:0,translate:svg.includes('translate(')?1:0},family:family};
+}
+function nudgeProfile(parsed,dir,subject){
+  var lr=dir===1?0.25:-0.15;
+  if(parsed.family)profile.familyWeights[parsed.family]=Math.max(0.1,Math.min(5,(profile.familyWeights[parsed.family]||1)+lr*1.5));
+  profile.displacementScale=Math.max(0.5,Math.min(2.5,profile.displacementScale+lr*(parsed.displacementScale-profile.displacementScale)*0.4));
+  profile.echoLayers=Math.max(1,Math.min(6,profile.echoLayers+lr*(parsed.echoLayers-profile.echoLayers)*0.4));
+  profile.primaryStroke=Math.max(0.4,Math.min(2.0,profile.primaryStroke+lr*(parsed.primaryStroke-profile.primaryStroke)*0.4));
+  profile.animDuration=Math.max(1.5,Math.min(6,profile.animDuration+lr*(parsed.animDuration-profile.animDuration)*0.4));
+  profile.density=Math.max(2,Math.min(12,profile.density+lr*(parsed.density-profile.density)*0.4));
+  Object.keys(profile.animStyle).forEach(function(k){profile.animStyle[k]=Math.max(0,Math.min(3,profile.animStyle[k]+lr*(parsed.animStyle[k]-profile.animStyle[k])*0.3));});
+  if(subject){if(dir===1){profile.likedSubjects=Array.from(new Set([subject].concat(profile.likedSubjects))).slice(0,8);profile.dislikedSubjects=profile.dislikedSubjects.filter(function(s){return s!==subject;});}else{profile.dislikedSubjects=Array.from(new Set([subject].concat(profile.dislikedSubjects))).slice(0,8);profile.likedSubjects=profile.likedSubjects.filter(function(s){return s!==subject;});}}
+  profile.feedbackLog=profile.feedbackLog.slice(-19).concat([{dir:dir,family:parsed.family,t:Date.now()}]);
+  saveProfile();
+}
+function profileToDirective(){
+  var p=profile;
+  var topFamilies=Object.entries(p.familyWeights).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(e){return e[0];}).join(', ');
+  var animPref=Object.entries(p.animStyle).sort(function(a,b){return b[1]-a[1];})[0][0];
+  var lines=['STYLE PROFILE (learned from feedback):','- Preferred families: '+topFamilies,'- Displacement scale: '+p.displacementScale.toFixed(2),'- Echo layers: '+Math.round(p.echoLayers),'- Primary stroke: '+p.primaryStroke.toFixed(2),'- Animation duration: '+p.animDuration.toFixed(1)+'s','- Animation style: '+animPref+'-reveal','- Path density: ~'+Math.round(p.density)];
+  if(p.likedSubjects.length)lines.push('- Lean toward: '+p.likedSubjects.join(', '));
+  if(p.dislikedSubjects.length)lines.push('- Lean away from: '+p.dislikedSubjects.join(', '));
+  return lines.join('\n');
+}
+function buildSystemPrompt(){
+  return 'You are an SVG animation artist for Butterfly Effect Studio (BES). You create animated icons — white strokes on transparent background, no fills except small dot accents, with a fractalNoise displacement filter.\n\n'+profileToDirective()+'\n\nBEFORE YOU DRAW — REASON FIRST\nStep 1: Identify the single most iconic, geometrically reducible element of the subject.\nStep 2: Decide which canonical family: SPIRAL, RIPPLE, ATTRACTOR, NETWORK, or GRID.\nStep 3: Inherit that family\'s exact construction logic from its reference icon.\nStep 4: Output SVG only.\n\nTHE BES VISUAL SYSTEM\n1. SEED PATHS — 3 to 8 paths. One iconic element, rendered simply.\n2. ECHO LAYERS — every seed path echoed 2-3 times. Opacity: 1.0 > 0.6 > 0.35 > 0.2. Stagger 0.25-0.35s.\n3. REVEAL — stroke-dasharray + stroke-dashoffset. Draw on, hold, fade. All infinite.\n4. DISPLACEMENT — one fractalNoise feDisplacementMap. Unique filter id and class prefixes. Scale 1.0-1.6.\n5. STROKES — Primary: 0.9-1.3. Echo 1: 0.55-0.7. Echo 2: 0.3-0.45. Echo 3: 0.2-0.3. stroke-linecap="round" everywhere.\n6. DOT — one filled circle r 1.0-1.8 at a meaningful anchor.\n\nKeyframe template:\n@keyframes X{0%{stroke-dashoffset:[len];opacity:0}10%{opacity:1}65%{stroke-dashoffset:0;opacity:1}85%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:[len];opacity:0}}\n\nCANONICAL REFERENCES\nSPIRAL: '+SPIRAL_SVG+'\nRIPPLE: '+RIPPLE_SVG+'\nATTRACTOR: '+ATTRACTOR_SVG+'\nNETWORK: '+NETWORK_SVG+'\nGRID: '+GRID_SVG+'\n\nHARD RULES\n- Output ONLY raw SVG. No markdown, no backticks, no explanation.\n- Opening tag: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64">\n- All styles inside <defs><style></style></defs>\n- White strokes only. No fills except dot accents. stroke-linecap="round" everywhere.\n- Unique filter id and class prefixes. Never reuse fa, fr, fg, fn, fsp.\n- All animations infinite. Never static. Never skip echo system. One SVG only.';
 }
 
-async function exportPNG(svgString, label) {
-  const SIZE = 512;
-  const canvas = document.createElement("canvas");
-  canvas.width = SIZE; canvas.height = SIZE;
-  const ctx = canvas.getContext("2d");
-  const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  await new Promise((res, rej) => {
-    const img = new Image();
-    img.onload = () => { ctx.drawImage(img, 0, 0, SIZE, SIZE); URL.revokeObjectURL(url); res(); };
-    img.onerror = rej;
-    img.src = url;
+// ── GIF encoder ──
+function encodeGIF(frames,w,h,delay){
+  delay=delay||5;
+  function lzwEncode(pixels,minCode){var clear=1<<minCode,eoi=clear+1,codeSize=minCode+1,dict=new Map(),code=eoi+1,buf=0,bufBits=0,out=[];function emit(c){buf|=c<<bufBits;bufBits+=codeSize;while(bufBits>=8){out.push(buf&0xff);buf>>=8;bufBits-=8;}}for(var i=0;i<(1<<minCode);i++)dict.set(String(i),[i]);emit(clear);var chain=[];for(var i=0;i<pixels.length;i++){var px=pixels[i],next=chain.concat([px]),key=next.join(',');if(dict.has(key)){chain=next;}else{var cv=dict.get(chain.join(','));emit(cv?cv[0]:chain[0]);dict.set(key,[code++]);chain=[px];if(code>(1<<codeSize)&&codeSize<12)codeSize++;}}if(chain.length){var cv=dict.get(chain.join(','));emit(cv?cv[0]:chain[0]);}emit(eoi);if(bufBits>0)out.push(buf&0xff);return out;}
+  function buildPalette(fd){var freq=new Map();for(var fi=0;fi<fd.length;fi++){var f=fd[fi];for(var i=0;i<f.length;i+=4){if(f[i+3]<128)continue;var k=(f[i]>>3)+','+(f[i+1]>>3)+','+(f[i+2]>>3);freq.set(k,(freq.get(k)||0)+1);}}var sorted=Array.from(freq.entries()).sort(function(a,b){return b[1]-a[1];});var pal=[[0,0,0]];for(var i=0;i<Math.min(254,sorted.length);i++){var parts=sorted[i][0].split(',');pal.push([parseInt(parts[0])<<3,parseInt(parts[1])<<3,parseInt(parts[2])<<3]);}while(pal.length<256)pal.push([0,0,0]);return pal;}
+  function quantize(rgba,pal){var out=[];for(var i=0;i<rgba.length;i+=4){if(rgba[i+3]<128){out.push(0);continue;}var r=rgba[i],g=rgba[i+1],b=rgba[i+2],best=1,bestD=1e9;for(var j=1;j<pal.length;j++){var dr=r-pal[j][0],dg=g-pal[j][1],db=b-pal[j][2],d=dr*dr+dg*dg+db*db;if(d<bestD){bestD=d;best=j;}}out.push(best);}return out;}
+  function word(n){return[n&0xff,(n>>8)&0xff];}
+  var fd=frames.map(function(c){return c.getContext('2d').getImageData(0,0,w,h).data;});
+  var pal=buildPalette(fd),bytes=[];
+  [0x47,0x49,0x46,0x38,0x39,0x61].forEach(function(b){bytes.push(b);});
+  word(w).forEach(function(b){bytes.push(b);});word(h).forEach(function(b){bytes.push(b);});bytes.push(0xf7,0,0);
+  pal.forEach(function(c){bytes.push(c[0],c[1],c[2]);});
+  bytes.push(0x21,0xff,0x0b,0x4e,0x45,0x54,0x53,0x43,0x41,0x50,0x45,0x32,0x2e,0x30,3,1,0,0,0);
+  fd.forEach(function(rgba){
+    var idx=quantize(rgba,pal);
+    bytes.push(0x21,0xf9,4,0x01);word(delay).forEach(function(b){bytes.push(b);});bytes.push(0,0);
+    bytes.push(0x2c);word(0).forEach(function(b){bytes.push(b);});word(0).forEach(function(b){bytes.push(b);});word(w).forEach(function(b){bytes.push(b);});word(h).forEach(function(b){bytes.push(b);});bytes.push(0);
+    var comp=lzwEncode(idx,8);bytes.push(8);
+    for(var i=0;i<comp.length;i+=255){var chunk=comp.slice(i,i+255);bytes.push(chunk.length);chunk.forEach(function(b){bytes.push(b);});}
+    bytes.push(0);
   });
-  const a = document.createElement("a");
-  a.href = canvas.toDataURL("image/png");
-  a.download = `bes-icon-${label.replace(/\s+/g, "-")}.png`;
-  a.click();
+  bytes.push(0x3b);
+  return new Uint8Array(bytes);
 }
 
-async function exportGIF(svgString, label, onProgress) {
-  const SIZE = 128, FPS = 15, DURATION = 4000;
-  const TOTAL_FRAMES = Math.round((DURATION / 1000) * FPS);
-  const FRAME_DELAY = Math.round(1000 / FPS);
-  const frames = [];
+async function captureCanvasGIF(sourceCanvas,name,variant){
+  var size=128,fps=20,duration=4,totalFrames=fps*duration;
+  var bgColor=variant==='white-black'?'#0a0a0a':variant==='black-white'?'#ffffff':null;
+  var invert=variant==='black-transparent'||variant==='black-white';
+  var canvases=[];
+  for(var i=0;i<totalFrames;i++){
+    await new Promise(function(r){setTimeout(r,1000/fps);});
+    var cv=document.createElement('canvas');cv.width=size;cv.height=size;
+    var ctx=cv.getContext('2d');
+    if(bgColor){ctx.fillStyle=bgColor;ctx.fillRect(0,0,size,size);}
+    if(invert){var tmp=document.createElement('canvas');tmp.width=size;tmp.height=size;var tc=tmp.getContext('2d');tc.drawImage(sourceCanvas,0,0,size,size);var id=tc.getImageData(0,0,size,size);for(var j=0;j<id.data.length;j+=4){id.data[j]=255-id.data[j];id.data[j+1]=255-id.data[j+1];id.data[j+2]=255-id.data[j+2];}tc.putImageData(id,0,0);ctx.drawImage(tmp,0,0,size,size);}
+    else ctx.drawImage(sourceCanvas,0,0,size,size);
+    canvases.push(cv);
+  }
+  triggerGIFDownload(encodeGIF(canvases,size,size,Math.round(100/fps)),name+'-'+variant+'.gif');
+}
 
-  for (let i = 0; i < TOTAL_FRAMES; i++) {
-    const t = (i / TOTAL_FRAMES) * DURATION;
-    const framedSVG = svgString
-      .replace(/animation-delay\s*:\s*([^;}"'\s]+)/g, (_, delay) => {
-        const delayMs = parseFloat(delay) * (delay.includes("ms") ? 1 : 1000);
-        return `animation-delay:${-(t - delayMs)}ms`;
-      })
-      .replace(/<style>/g, `<style>*{animation-play-state:paused!important;}`);
-    const canvas = document.createElement("canvas");
-    canvas.width = SIZE; canvas.height = SIZE;
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#0a0a0a"; ctx.fillRect(0, 0, SIZE, SIZE);
-    const blob = new Blob([framedSVG], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    await new Promise((res) => {
-      const img = new Image();
-      img.onload = () => { ctx.drawImage(img, 0, 0, SIZE, SIZE); URL.revokeObjectURL(url); res(); };
-      img.onerror = () => res();
-      img.src = url;
+async function captureSVGGIF(svgString,name,variant){
+  var size=128,fps=20,duration=4,totalFrames=fps*duration;
+  var s=applyVariant(svgString,variant);
+  var bgColor=variant==='white-black'?'#0a0a0a':variant==='black-white'?'#ffffff':null;
+  var blob=new Blob([s],{type:'image/svg+xml'});
+  var url=URL.createObjectURL(blob);
+  var container=document.createElement('div');
+  container.style.cssText='position:fixed;left:-9999px;top:-9999px;width:'+size+'px;height:'+size+'px;';
+  document.body.appendChild(container);
+  var img=document.createElement('img');img.width=size;img.height=size;img.src=url;container.appendChild(img);
+  await new Promise(function(r){img.onload=r;});
+  await new Promise(function(r){setTimeout(r,80);});
+  var canvases=[];
+  for(var i=0;i<totalFrames;i++){
+    await new Promise(function(r){setTimeout(r,1000/fps);});
+    var cv=document.createElement('canvas');cv.width=size;cv.height=size;
+    var ctx=cv.getContext('2d');
+    if(bgColor){ctx.fillStyle=bgColor;ctx.fillRect(0,0,size,size);}
+    try{ctx.drawImage(img,0,0,size,size);}catch(e){}
+    canvases.push(cv);
+  }
+  document.body.removeChild(container);URL.revokeObjectURL(url);
+  triggerGIFDownload(encodeGIF(canvases,size,size,Math.round(100/fps)),name+'-'+variant+'.gif');
+}
+
+function triggerGIFDownload(gif,filename){
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([gif],{type:'image/gif'}));a.download=filename;a.click();
+}
+
+// ── Export helpers ──
+function applyVariant(s,variant){
+  var inv=variant==='black-transparent'||variant==='black-white';
+  if(inv){s=s.replace(/stroke="white"/g,'stroke="black"').replace(/fill="white"/g,'fill="black"').replace(/rgba\(255,255,255,/g,'rgba(0,0,0,');}
+  if(variant==='white-black'||variant==='black-white'){var bg=variant==='white-black'?'#0a0a0a':'#ffffff';s=s.replace(/<svg([^>]*)>/,'<svg$1><rect width="64" height="64" fill="'+bg+'"/>');}
+  return s;
+}
+function downloadSVG(svgString,name,variant){var s=applyVariant(svgString,variant);var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));a.download=name+'-'+variant+'.svg';a.click();}
+function downloadPNG(svgString,name,variant,size){
+  size=size||512;var s=applyVariant(svgString,variant),bgColor=variant==='white-black'?'#0a0a0a':variant==='black-white'?'#ffffff':null;
+  var url=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));
+  var img=new Image();img.src=url;
+  img.onload=function(){var cv=document.createElement('canvas');cv.width=size;cv.height=size;var ctx=cv.getContext('2d');if(bgColor){ctx.fillStyle=bgColor;ctx.fillRect(0,0,size,size);}ctx.drawImage(img,0,0,size,size);var a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download=name+'-'+variant+'.png';a.click();URL.revokeObjectURL(url);};
+}
+function downloadCanvasPNG(canvas,name,variant,size){
+  size=size||512;var cv=document.createElement('canvas');cv.width=size;cv.height=size;var ctx=cv.getContext('2d');
+  var inv=variant==='black-transparent'||variant==='black-white',bgColor=variant==='white-black'?'#0a0a0a':variant==='black-white'?'#ffffff':null;
+  if(bgColor){ctx.fillStyle=bgColor;ctx.fillRect(0,0,size,size);}
+  if(inv){var tmp=document.createElement('canvas');tmp.width=size;tmp.height=size;var tc=tmp.getContext('2d');tc.drawImage(canvas,0,0,size,size);var id=tc.getImageData(0,0,size,size);for(var i=0;i<id.data.length;i+=4){id.data[i]=255-id.data[i];id.data[i+1]=255-id.data[i+1];id.data[i+2]=255-id.data[i+2];}tc.putImageData(id,0,0);ctx.drawImage(tmp,0,0,size,size);}
+  else ctx.drawImage(canvas,0,0,size,size);
+  var a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download=name+'-'+variant+'.png';a.click();
+}
+function copySVG(svg){
+  try{var ta=document.createElement('textarea');ta.value=svg;ta.style.cssText='position:fixed;left:-9999px;top:-9999px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);return true;}
+  catch(e){var url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));window.open(url,'_blank');return false;}
+}
+
+// ── Canvas animations ──
+var TURNS=3.5,STEPS=320;
+function bakeWobble(amp){var wx=[],wy=[];for(var i=0;i<=STEPS;i++){var t=i/STEPS;wx.push((Math.random()-0.5)*amp+Math.sin(t*11.3+Math.random()*0.4)*amp*0.5+(Math.random()-0.5)*amp*0.3);wy.push((Math.random()-0.5)*amp*0.65+Math.sin(t*9.7+Math.random()*0.4)*amp*0.35+(Math.random()-0.5)*amp*0.2);}return{wx:wx,wy:wy};}
+function makeSpiralLayers(){var w1=bakeWobble(1.3),w2=bakeWobble(1.0),w3=bakeWobble(0.7);return[{opacity:0.92,lw:1.1,lag:0,wx:w1.wx,wy:w1.wy},{opacity:0.48,lw:0.6,lag:0.06,wx:w2.wx,wy:w2.wy},{opacity:0.22,lw:0.32,lag:0.12,wx:w3.wx,wy:w3.wy}];}
+
+function runNetwork(canvas){
+  var ctx=canvas.getContext('2d'),W=72,H=72;
+  var BASE=[{x1:32,y1:32,x2:13,y2:20,w:0.8},{x1:32,y1:32,x2:51,y2:22,w:0.8},{x1:32,y1:32,x2:11,y2:45,w:0.8},{x1:32,y1:32,x2:53,y2:45,w:0.8},{x1:32,y1:32,x2:33,y2:7,w:0.8},{x1:13,y1:20,x2:7,y2:31,w:0.5},{x1:51,y1:22,x2:57,y2:33,w:0.5}];
+  var TIPS=[{x:13,y:20},{x:51,y:22},{x:11,y:45},{x:53,y:45},{x:33,y:7},{x:7,y:31},{x:57,y:33}];
+  var nodePos=[{x:32,y:32,r:2},{x:13,y:20,r:1.5},{x:51,y:22,r:1.5},{x:11,y:45,r:1.2},{x:53,y:45,r:1.2},{x:33,y:7,r:1.2},{x:7,y:31,r:1.0},{x:57,y:33,r:1.0}];
+  var HOLD=2000,FADE=600,branches=[],phase='drawing',phaseTimer=0,elapsed=0,lastTime=null;
+  function wb(){return(Math.random()-0.5)*5;}
+  function reset(){
+    branches=BASE.map(function(b,i){return{x1:b.x1,y1:b.y1,x2:b.x2,y2:b.y2,w:b.w,mx:(b.x1+b.x2)/2+wb(),my:(b.y1+b.y2)/2+wb(),gen:1,progress:0,opacity:1,startTime:i*0.28};});
+    var g2=[];
+    TIPS.forEach(function(tip){var a=Math.atan2(tip.y-32,tip.x-32);[-0.35,0.35].forEach(function(s,j){var ang=a+s,len=7+Math.random()*5,fx=Math.max(3,Math.min(W-3,tip.x+Math.cos(ang)*len)),fy=Math.max(3,Math.min(H-3,tip.y+Math.sin(ang)*len)),st=1.8+j*0.15+Math.random()*0.2;branches.push({x1:tip.x,y1:tip.y,x2:fx,y2:fy,mx:(tip.x+fx)/2+wb(),my:(tip.y+fy)/2+wb(),w:0.4,gen:2,progress:0,opacity:1,startTime:st});g2.push({x:fx,y:fy,addedAt:st});});});
+    g2.forEach(function(tip){var a=Math.atan2(tip.y-32,tip.x-32);[-0.3,0.3].forEach(function(s,j){var ang=a+s,len=5+Math.random()*4,fx=Math.max(2,Math.min(W-2,tip.x+Math.cos(ang)*len)),fy=Math.max(2,Math.min(H-2,tip.y+Math.sin(ang)*len));branches.push({x1:tip.x,y1:tip.y,x2:fx,y2:fy,mx:(tip.x+fx)/2+wb(),my:(tip.y+fy)/2+wb(),w:0.25,gen:3,progress:0,opacity:1,startTime:tip.addedAt+0.6+j*0.1+Math.random()*0.2});});});
+    elapsed=0;phase='drawing';phaseTimer=0;
+  }
+  reset();
+  function frame(ts){
+    if(!lastTime)lastTime=ts;var dt=(ts-lastTime)/1000;lastTime=ts;elapsed+=dt;
+    ctx.clearRect(0,0,W,H);
+    if(phase==='drawing'){branches.forEach(function(b){if(elapsed>b.startTime)b.progress=Math.min(1,b.progress+0.055);});if(branches.every(function(b){return b.progress>=1;})){phase='holding';phaseTimer=0;}}
+    if(phase==='holding'){phaseTimer+=dt*1000;if(phaseTimer>HOLD){phase='fading';phaseTimer=0;}}
+    if(phase==='fading'){phaseTimer+=dt*1000;var t=Math.min(1,phaseTimer/FADE);branches.forEach(function(b){b.opacity=1-t;});if(t>=1)reset();}
+    branches.forEach(function(b){if(b.progress<=0)return;var tx=b.x1+(b.x2-b.x1)*b.progress,ty=b.y1+(b.y2-b.y1)*b.progress,cmx=b.x1+(b.mx-b.x1)*b.progress,cmy=b.y1+(b.my-b.y1)*b.progress;ctx.beginPath();ctx.moveTo(b.x1,b.y1);ctx.quadraticCurveTo(cmx,cmy,tx,ty);ctx.strokeStyle='rgba(255,255,255,'+(b.opacity*(b.gen===1?0.9:b.gen===2?0.55:0.35))+')';ctx.lineWidth=b.w;ctx.lineCap='round';ctx.stroke();});
+    var bd=branches.filter(function(b){return b.gen===1;});
+    nodePos.forEach(function(n,i){var rel=bd[i]?bd[i].progress:(i===0?1:0);if(rel<=0)return;var fade=phase==='fading'?branches[0].opacity:1;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+(Math.min(1,rel*3)*fade)+')';ctx.fill();});
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function runSpiral(canvas){
+  var ctx=canvas.getContext('2d'),W=72,H=72,cx=36,cy=38;
+  var rotY=0,rotX=-0.3,time=0,head=0,tail=0,holdTimer=0,phase='drawing',last=null;
+  var layers=makeSpiralLayers();
+  var speedTable=(function(){var t=[],s=0;for(var i=0;i<=STEPS;i++){var v=i/STEPS,sp=0.72+0.28*v+0.12*Math.sin(v*TURNS*Math.PI*2);t.push(s);s+=sp;}for(var j=0;j<=STEPS;j++)t[j]/=s;return t;})();
+  function pIdx(p){var lo=0,hi=STEPS;while(lo<hi){var m=(lo+hi)>>1;if(speedTable[m]<p)lo=m+1;else hi=m;}return lo;}
+  function ease(t){return t<0.5?2*t*t:-1+(4-2*t)*t;}
+  function proj(x,y,z,rX,rY){var x1=x*Math.cos(rY)-z*Math.sin(rY),z1=x*Math.sin(rY)+z*Math.cos(rY),y2=y*Math.cos(rX)-z1*Math.sin(rX),z2=y*Math.sin(rX)+z1*Math.cos(rX),fov=3.2,pz=fov/(fov+z2*0.01);return{sx:x1*1.28*pz,sy:y2*1.28*pz,depth:z2};}
+  function frame(ts){
+    if(!last)last=ts;var dt=Math.min((ts-last)/1000,0.05);last=ts;time+=dt;
+    rotY+=(0.42+0.18*Math.sin(time*0.7)+0.08*Math.sin(time*1.3))*dt;
+    rotX=-0.3+0.06*Math.sin(time*0.23)+0.03*Math.sin(time*0.41);
+    if(phase==='drawing'){head=Math.min(1,head+dt*0.36);if(head>=1){phase='holding';holdTimer=0;}}
+    else if(phase==='holding'){holdTimer+=dt;if(holdTimer>1.4)phase='dissolving';}
+    else{tail=Math.min(1,tail+dt*0.28);if(tail>=1){head=0;tail=0;phase='drawing';layers=makeSpiralLayers();}}
+    ctx.clearRect(0,0,W,H);
+    layers.forEach(function(layer){
+      var hN=pIdx(Math.min(0.9999,ease(Math.min(1,Math.max(0,head-layer.lag))))),tN=pIdx(Math.min(0.9999,ease(Math.min(1,Math.max(0,tail-layer.lag*0.5)))));
+      if(hN<2)return;
+      for(var i=tN;i<hN-1;i++){
+        var t0=i/STEPS,t1=(i+1)/STEPS,a0=t0*TURNS*Math.PI*2,r0=t0*16,a1=t1*TURNS*Math.PI*2,r1=t1*16;
+        var p0=proj(Math.cos(a0)*r0+layer.wx[i],(1-t0)*30-15+layer.wy[i],Math.sin(a0)*r0,rotX,rotY);
+        var p1=proj(Math.cos(a1)*r1+layer.wx[i+1],(1-t1)*30-15+layer.wy[i+1],Math.sin(a1)*r1,rotX,rotY);
+        var tE=Math.min(1,(i-tN)/14),hE=Math.min(1,(hN-i)/20),dF=Math.max(0.25,Math.min(1,(p0.depth+18)/36)),tp=(0.7+0.3*Math.sin(t0*Math.PI))*(0.88+Math.random()*0.24);
+        ctx.beginPath();ctx.moveTo(cx+p0.sx,cy+p0.sy);ctx.lineTo(cx+p1.sx,cy+p1.sy);
+        ctx.strokeStyle='rgba(255,255,255,'+(layer.opacity*dF*tE*hE)+')';ctx.lineWidth=layer.lw*tp;ctx.lineCap='round';ctx.stroke();
+      }
     });
-    frames.push(ctx.getImageData(0, 0, SIZE, SIZE).data);
-    if (onProgress) onProgress(Math.round((i / TOTAL_FRAMES) * 80));
+    var aF=Math.min(1,head*4)*(tail>0?Math.max(0,1-tail*3):1);
+    if(aF>0.02){var ap=proj(0,15,0,rotX,rotY);ctx.beginPath();ctx.arc(cx+ap.sx,cy+ap.sy,1.2,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+(0.9*aF)+')';ctx.fill();}
+    requestAnimationFrame(frame);
   }
-
-  if (onProgress) onProgress(85);
-
-  function lzw(pixels, minBits) {
-    const clear = 1 << minBits, eoi = clear + 1;
-    let bits = minBits + 1, next = eoi + 1;
-    const codes = new Map();
-    for (let i = 0; i < clear; i++) codes.set('' + i, i);
-    let buf = 0, bufLen = 0;
-    const bytes = [];
-    const emit = v => {
-      buf |= v << bufLen; bufLen += bits;
-      while (bufLen >= 8) { bytes.push(buf & 0xff); buf >>= 8; bufLen -= 8; }
-      if (next >= (1 << bits) && bits < 12) bits++;
-    };
-    emit(clear);
-    let str = '' + pixels[0];
-    for (let i = 1; i < pixels.length; i++) {
-      const ext = str + ',' + pixels[i];
-      if (codes.has(ext)) { str = ext; continue; }
-      emit(codes.get(str));
-      if (next < 4096) { codes.set(ext, next++); }
-      else { emit(clear); bits = minBits+1; next = eoi+1; codes.clear(); for(let j=0;j<clear;j++) codes.set(''+j,j); }
-      str = '' + pixels[i];
-    }
-    emit(codes.get(str));
-    emit(eoi);
-    if (bufLen > 0) bytes.push(buf & 0xff);
-    const out = [minBits];
-    for (let i = 0; i < bytes.length; i += 255) {
-      const chunk = bytes.slice(i, i+255);
-      out.push(chunk.length, ...chunk);
-    }
-    out.push(0);
-    return out;
-  }
-
-  const W = SIZE, H = SIZE, delay = Math.round(FRAME_DELAY / 10);
-  const w2 = v => [v & 0xff, (v >> 8) & 0xff];
-  const gif = [];
-  const p = (...b) => b.forEach(v => gif.push(v));
-  p(0x47,0x49,0x46,0x38,0x39,0x61);
-  p(...w2(W), ...w2(H));
-  p(0xf7, 0, 0);
-  for (let i = 0; i < 256; i++) p(i, i, i);
-  p(0x21,0xff,0x0b,78,69,84,83,67,65,80,69,50,46,48,3,1,0,0,0);
-  for (const rgba of frames) {
-    const idx = new Uint8Array(W * H);
-    for (let i = 0; i < W * H; i++) {
-      const r = rgba[i*4], g = rgba[i*4+1], b = rgba[i*4+2];
-      idx[i] = Math.round(0.299*r + 0.587*g + 0.114*b);
-    }
-    p(0x21,0xf9,0x04,0x00,...w2(delay),0,0);
-    p(0x2c,...w2(0),...w2(0),...w2(W),...w2(H),0x00);
-    p(...lzw(idx, 8));
-  }
-  p(0x3b);
-
-  if (onProgress) onProgress(98);
-  const blob = new Blob([new Uint8Array(gif)], { type: "image/gif" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `bes-icon-${label.replace(/\s+/g, "-")}.gif`;
-  a.click();
-  URL.revokeObjectURL(url);
-  if (onProgress) onProgress(100);
+  requestAnimationFrame(frame);
 }
 
-function App() {
-  const [prompt, setPrompt] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [icons, setIcons] = useState([]);
-  const [error, setError] = useState("");
-  const [copied, setCopied] = useState(null);
-  const [exporting, setExporting] = useState({});
-  const [gifProgress, setGifProgress] = useState({});
+// ── State ──
+var icons=[];
+var batchIcons=null;
+var loading=false;
+var gifLoadingIds={};
+var mode='random';
+var lastSubject='';
+var feedbackMap={};
+var copiedId=null;
 
-  async function generate(p) {
-    const q = (p || prompt).trim();
-    if (!q || loading) return;
-    setLoading(true); setError("");
-    try {
-      const res = await fetch("/generate", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ prompt: q })
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      const svg = extractSVG(data.svg);
-      if (!svg.includes("<svg")) throw new Error("No SVG returned.");
-      setIcons(prev => [{ prompt: q, svg, id: Date.now() }, ...prev].slice(0, 24));
-      if (!p) setPrompt("");
-    } catch(e) {
-      setError(e.message || "Generation failed.");
-    } finally {
-      setLoading(false);
-    }
+var SUBJECT_POOL=["wave","tornado","whirlpool","lightning bolt","ripple","current","vortex","gust of wind","updraft","aurora","solar system","black hole","comet","nebula","orbit","eclipse","pulsar","galaxy spiral","shooting star","event horizon","leaf","fern","coral","seed pod","vine","petal","root system","lotus","moss","spore","flame","smoke","snowflake","ice crystal","steam","ember","frost","raindrop","bubble","tide","infinity loop","spiral","spider web","compass rose","labyrinth","fractal","helix","interference pattern","signal wave","feedback loop","jellyfish","snake","butterfly","bird in flight","dragonfly","firefly","moth","nautilus","sea anemone","manta ray","eye","feather","hourglass","prism","thread","signal burst","chain","rippling membrane","echo"];
+var THEMES=["butterfly","cocoon","metamorphosis","emergence","signal","chaos","threshold","cascade","entanglement"];
+var VARIANTS=[{id:"white-transparent",label:"White / Transparent"},{id:"white-black",label:"White / Black bg"},{id:"black-transparent",label:"Black / Transparent"},{id:"black-white",label:"Black / White bg"}];
+
+function pickRandom(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function pickThreeDistinct(){
+  var liked=profile.likedSubjects,disliked=profile.dislikedSubjects;
+  var filtered=SUBJECT_POOL.filter(function(s){return !disliked.includes(s);});
+  var src=filtered.length>=3?filtered:SUBJECT_POOL;
+  var chosen=[];
+  if(liked.length>0&&Math.random()<0.4)chosen.push(pickRandom(liked));
+  var available=src.filter(function(s){return chosen.indexOf(s)===-1;});
+  var shuffled=available.slice().sort(function(){return Math.random()-0.5;});
+  while(chosen.length<3&&shuffled.length)chosen.push(shuffled.pop());
+  return chosen.slice(0,3);
+}
+
+function extractSVG(r){r=r.replace(/^```[\w]*\n?/gm,'').replace(/\n?```$/gm,'').trim();var m=r.match(/<svg[\s\S]*<\/svg>/i);return m?m[0]:r;}
+
+async function generateOne(subject){
+  var res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:buildSystemPrompt(),prompt:'Subject: '+subject+'\n\nStep 1 - identify the single most iconic geometric element.\nStep 2 - assign to a canonical family.\nStep 3 - inherit that family\'s construction logic from the reference.\nStep 4 - output the SVG and nothing else.'})});
+  var data=await res.json();
+  if(data.error)throw new Error(data.error);
+  var svg=extractSVG(data.text||'');
+  if(!svg.includes('<svg'))throw new Error('No SVG in response.');
+  return{prompt:subject,svg:svg,id:Date.now()+Math.random()};
+}
+
+async function generate(subject){
+  if(loading)return;
+  loading=true;render();
+  try{
+    var subjects=subject?[subject,subject,subject]:pickThreeDistinct();
+    lastSubject=subjects[0];
+    var results=await Promise.all(subjects.map(generateOne));
+    batchIcons=results;
+  }catch(e){showError(e.message||'Generation failed.');}
+  loading=false;render();
+}
+
+function showError(msg){document.getElementById('error-msg').textContent=msg;}
+
+// ── Export dropdowns ──
+var openDropdownId=null;
+document.addEventListener('mousedown',function(e){
+  if(openDropdownId&&!e.target.closest('[data-dropdown="'+openDropdownId+'"]')){
+    var el=document.querySelector('[data-dropdown="'+openDropdownId+'"]');
+    if(el){var dd=el.querySelector('.dd-menu');if(dd)dd.style.display='none';}
+    openDropdownId=null;
   }
+});
+function toggleDropdown(id){
+  var el=document.querySelector('[data-dropdown="'+id+'"]');
+  if(!el)return;
+  var dd=el.querySelector('.dd-menu');
+  if(!dd)return;
+  var isOpen=dd.style.display==='flex';
+  if(openDropdownId&&openDropdownId!==id){
+    var prev=document.querySelector('[data-dropdown="'+openDropdownId+'"]');
+    if(prev){var pm=prev.querySelector('.dd-menu');if(pm)pm.style.display='none';}
+  }
+  dd.style.display=isOpen?'none':'flex';
+  openDropdownId=isOpen?null:id;
+}
 
-  function copyIcon(svg, id) {
-    navigator.clipboard.writeText(svg).then(() => {
-      setCopied(id);
-      setTimeout(() => setCopied(null), 2000);
+function makeExportDropdown(id,svg,name,isCanvas,canvasRef){
+  var gifBusy=!!gifLoadingIds[id];
+  var html='<div data-dropdown="'+id+'" style="position:relative;width:100%;">';
+  html+='<button onclick="toggleDropdown(\''+id+'\')" style="width:100%;padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Export ▾</button>';
+  html+='<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#111;border:1px solid #2a2a2a;z-index:100;padding:6px;flex-direction:column;gap:5px;">';
+  VARIANTS.forEach(function(v){
+    html+='<div><div style="font-size:6px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.2;margin-bottom:2px;">'+v.label+'</div>';
+    html+='<div style="display:flex;gap:3px;">';
+    html+='<button onclick="downloadPNG(\''+escapeSVGForAttr(svg)+'\',\''+name+'\',\''+v.id+'\');toggleDropdown(\''+id+'\')" style="flex:1;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 0;">PNG</button>';
+    if(!isCanvas){
+      html+='<button onclick="downloadSVG(\''+escapeSVGForAttr(svg)+'\',\''+name+'\',\''+v.id+'\');toggleDropdown(\''+id+'\')" style="flex:1;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 0;">SVG</button>';
+    } else {
+      html+='<button disabled style="flex:1;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 0;opacity:0.15;cursor:not-allowed;">SVG</button>';
+    }
+    html+='<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\''+v.id+'\',\''+escapeSVGForAttr(svg)+'\',\''+name+'\','+isCanvas+');toggleDropdown(\''+id+'\')" style="flex:1;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 0;opacity:'+(gifBusy?'0.3':'1')+';">'+(gifBusy?'...':'GIF')+'</button>';
+    html+='</div></div>';
+  });
+  html+='</div></div>';
+  return html;
+}
+
+// We store SVGs in a map to avoid inline escaping issues
+var svgStore={};
+function storeSVG(id,svg){svgStore[id]=svg;return id;}
+function getSVG(id){return svgStore[id]||'';}
+
+function escapeSVGForAttr(svg){
+  // Store and return key instead of inlining SVG in onclick
+  return svg; // handled via svgStore
+}
+
+async function handleGIFExport(id,variant,svgOrEmpty,name,isCanvas){
+  gifLoadingIds[id]=true;render();
+  try{
+    if(isCanvas){
+      var canvas=document.getElementById('canvas-'+id);
+      if(canvas)await captureCanvasGIF(canvas,name,variant);
+    } else {
+      var svg=svgStore[id]||svgOrEmpty;
+      await captureSVGGIF(svg,name,variant);
+    }
+  }catch(e){console.error(e);}
+  delete gifLoadingIds[id];render();
+}
+
+function handleCopy(id){
+  var svg=svgStore[id];
+  if(!svg)return;
+  var ok=copySVG(svg);
+  if(ok){
+    var btn=document.getElementById('copy-btn-'+id);
+    if(btn){btn.textContent='Copied';setTimeout(function(){btn.textContent='Copy SVG';},2000);}
+  }
+}
+
+function handleFeedback(id,dir,isBatch){
+  var icon=isBatch?(batchIcons&&batchIcons.find(function(b){return b.id==id;})):(icons.find(function(i){return i.id==id;}));
+  if(!icon)return;
+  nudgeProfile(parseSVGProfile(icon.svg),dir,icon.prompt);
+  feedbackMap[id]=dir;
+  render();
+}
+
+function handleBatchPick(id){
+  var icon=batchIcons&&batchIcons.find(function(b){return b.id==id;});
+  batchIcons=null;
+  if(icon){icons.unshift(icon);if(icons.length>32)icons=icons.slice(0,32);storeSVG(icon.id,icon.svg);}
+  render();
+}
+
+function handleBatchDiscard(){batchIcons=null;render();}
+
+// ── Render meter ──
+function renderMeter(){
+  var el=document.getElementById('feedback-meter');
+  if(!el)return;
+  var log=profile.feedbackLog||[];
+  if(log.length===0){el.style.display='none';return;}
+  el.style.display='flex';
+  var families=['spiral','ripple','attractor','network','grid'];
+  var sorted=Object.entries(profile.familyWeights).sort(function(a,b){return b[1]-a[1];});
+  var topFamily=sorted[0][0],topScore=sorted[0][1],learned=topScore>1.3;
+  var likeCount=log.filter(function(l){return l.dir===1;}).length;
+  var dislikeCount=log.filter(function(l){return l.dir===-1;}).length;
+  var recent=log.slice(-10);
+  var barsHtml=families.map(function(f){var w=profile.familyWeights[f],h=Math.max(2,Math.round((w/5)*14)),isTop=f===topFamily;return '<div title="'+f+'" style="width:6px;height:'+h+'px;background:'+(isTop?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.15)')+';transition:height 0.4s;"></div>';}).join('');
+  var sparkHtml=recent.map(function(l){return '<div style="width:4px;height:'+(l.dir===1?10:5)+'px;background:'+(l.dir===1?'rgba(80,160,100,0.8)':'rgba(160,60,60,0.7)')+';border-radius:1px;"></div>';}).join('');
+  for(var i=recent.length;i<10;i++)sparkHtml+='<div style="width:4px;height:2px;background:rgba(255,255,255,0.07);border-radius:1px;"></div>';
+  var subjectsHtml='';
+  if(profile.likedSubjects.length>0)subjectsHtml+='<div style="font-size:6px;letter-spacing:1px;color:rgba(80,160,100,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">+'+profile.likedSubjects.slice(0,3).join(', ')+'</div>';
+  if(profile.dislikedSubjects.length>0)subjectsHtml+='<div style="font-size:6px;letter-spacing:1px;color:rgba(160,60,60,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">-'+profile.dislikedSubjects.slice(0,3).join(', ')+'</div>';
+  el.innerHTML='<div style="display:flex;flex-direction:column;gap:3px;"><span style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.25;">Style signal</span><div style="display:flex;gap:2px;align-items:flex-end;height:14px;">'+barsHtml+'</div><span style="font-size:6px;letter-spacing:1px;opacity:0.3;">'+(learned?topFamily:'learning...')+'</span></div><div style="width:1px;height:28px;background:#222;"></div><div style="display:flex;flex-direction:column;gap:3px;"><span style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.25;">Feedback log</span><div style="display:flex;gap:1.5px;align-items:center;height:14px;">'+sparkHtml+'</div><span style="font-size:6px;letter-spacing:1px;opacity:0.3;">'+likeCount+'✓ '+dislikeCount+'✕ of '+log.length+'</span></div>'+(subjectsHtml?'<div style="width:1px;height:28px;background:#222;"></div><div style="display:flex;flex-direction:column;gap:3px;">'+subjectsHtml+'</div>':'')+'<div style="margin-left:auto;"><button onclick="resetProfile()" style="font-family:Arial,sans-serif;font-size:6px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:3px 7px;opacity:0.3;">Reset</button></div>';
+}
+
+// ── Main render ──
+function render(){
+  var app=document.getElementById('app');
+
+  // Batch overlay
+  var batchHtml='';
+  if(batchIcons){
+    batchHtml='<div style="position:fixed;inset:0;background:rgba(0,0,0,0.94);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:24px;overflow-y:auto;padding:24px 16px;">';
+    batchHtml+='<p style="font-size:9px;letter-spacing:2px;text-transform:uppercase;opacity:0.3;margin:0;">Pick one to save</p>';
+    batchHtml+='<div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">';
+    batchIcons.forEach(function(icon){
+      storeSVG(icon.id,icon.svg);
+      var fb=feedbackMap[icon.id];
+      var border=fb===1?'#2E5038':fb===-1?'#3a1a1a':'#2a2a2a';
+      batchHtml+='<div style="display:flex;flex-direction:column;align-items:center;gap:10px;background:#111;border:1px solid '+border+';padding:28px 20px 16px;min-width:130px;max-width:150px;">';
+      batchHtml+='<div style="width:64px;height:64px;">'+icon.svg+'</div>';
+      batchHtml+='<p style="font-size:8px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.3;text-align:center;margin:0;word-break:break-word;">'+icon.prompt+'</p>';
+      batchHtml+='<div style="display:flex;gap:6px;width:100%;">';
+      batchHtml+='<button onclick="handleFeedback('+icon.id+',1,true)" style="flex:1;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===1?'#1E3325':'#0f0f0f')+';padding:5px 0;">✓</button>';
+      batchHtml+='<button onclick="handleFeedback('+icon.id+',-1,true)" style="flex:1;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===-1?'#2a1010':'#0f0f0f')+';padding:5px 0;">✕</button>';
+      batchHtml+='</div>';
+      batchHtml+='<button onclick="handleBatchPick('+icon.id+')" style="width:100%;padding:8px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#1a1a1a;">Save</button>';
+      batchHtml+='</div>';
     });
+    batchHtml+='</div>';
+    batchHtml+='<button onclick="handleBatchDiscard()" style="padding:8px 24px;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;opacity:0.35;margin-top:4px;">Discard all</button>';
+    batchHtml+='</div>';
   }
 
-  function downloadSVG(svg, label) {
-    const blob = new Blob([svg], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `bes-icon-${label.replace(/\s+/g, "-")}.svg`;
-    a.click();
-    URL.revokeObjectURL(url);
+  // Reference canvases (preserve if already in DOM)
+  var refCardsHtml='';
+  var refItems=[
+    {key:'attr',label:'Attractor',svg:ATTRACTOR_SVG},
+    {key:'ripl',label:'Ripple',svg:RIPPLE_SVG},
+    {key:'grid',label:'Grid',svg:GRID_SVG},
+    {key:'netw',label:'Network',svg:NETWORK_SVG},
+  ];
+  refItems.forEach(function(item){
+    storeSVG(item.key,item.svg);
+    refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
+    refCardsHtml+='<div style="width:48px;height:48px;">'+item.svg.replace('width="64" height="64"','width="48" height="48"')+'</div>';
+    refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">'+item.label+'</span>';
+    refCardsHtml+=makeExportDropdown(item.key,item.svg,item.label.toLowerCase(),false,null);
+    refCardsHtml+='</div>';
+  });
+  // Spiral canvas card
+  refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
+  refCardsHtml+='<canvas id="canvas-spiral-ref" width="48" height="48" style="width:48px;height:48px;"></canvas>';
+  refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">Spiral</span>';
+  refCardsHtml+=makeExportDropdown('spiral-ref','','spiral',true,null);
+  refCardsHtml+='</div>';
+  // Network canvas card
+  refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
+  refCardsHtml+='<canvas id="canvas-network-ref" width="48" height="48" style="width:48px;height:48px;"></canvas>';
+  refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">Network</span>';
+  refCardsHtml+=makeExportDropdown('network-ref','','network',true,null);
+  refCardsHtml+='</div>';
+
+  // Mode buttons
+  var modeBtns='<div style="display:flex;margin-bottom:20px;max-width:480px;">';
+  modeBtns+='<button onclick="setMode(\'random\')" style="flex:1;padding:11px 0;font-family:Arial,sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:1px solid '+(mode==='random'?'#341C12':'#222')+';border-right:none;color:#fff;background:'+(mode==='random'?'#1a0e09':'#111')+';">Random</button>';
+  modeBtns+='<button onclick="setMode(\'custom\')" style="flex:1;padding:11px 0;font-family:Arial,sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:1px solid '+(mode==='custom'?'#341C12':'#222')+';color:#fff;background:'+(mode==='custom'?'#1a0e09':'#111')+';">Custom</button>';
+  modeBtns+='</div>';
+
+  // Generate controls
+  var controlsHtml='';
+  if(mode==='random'){
+    controlsHtml='<div style="max-width:480px;margin-bottom:36px;display:flex;flex-direction:column;gap:10px;">';
+    controlsHtml+='<button onclick="generate()" '+(loading?'disabled':'')+' style="width:100%;padding:15px 0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:'+(loading?'not-allowed':'pointer')+';border:1px solid #341C12;color:'+(loading?'#444':'#fff')+';background:#1a0e09;opacity:'+(loading?0.5:1)+';">'+(loading?'Generating...':'Generate 3 (distinct)')+'</button>';
+    controlsHtml+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">';
+    THEMES.forEach(function(t){controlsHtml+='<button onclick="generate(\''+t+'\')" '+(loading?'disabled':'')+' style="padding:9px 12px;font-family:Arial,sans-serif;font-size:8px;letter-spacing:1.4px;text-transform:uppercase;cursor:'+(loading?'not-allowed':'pointer')+';border:1px solid #222;color:#fff;background:#111;text-align:center;">'+t+'</button>';});
+    controlsHtml+='</div></div>';
+  } else {
+    controlsHtml='<div style="max-width:480px;margin-bottom:36px;display:flex;flex-direction:column;gap:10px;">';
+    controlsHtml+='<input id="custom-input" placeholder="Describe an icon..." value="" onkeydown="if(event.key===\'Enter\'){var v=this.value.trim();if(v)generate(v);}" style="background:#111;border:1px solid #222;color:#fff;padding:12px 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1px;outline:none;width:100%;"/>';
+    controlsHtml+='<button onclick="var v=document.getElementById(\'custom-input\').value.trim();if(v)generate(v);" '+(loading?'disabled':'')+' style="padding:12px 0;width:100%;font-family:Arial,sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:'+(loading?'not-allowed':'pointer')+';border:1px solid #341C12;color:'+(loading?'#444':'#fff')+';background:#1a0e09;opacity:'+(loading?0.5:1)+';">'+(loading?'Generating...':'Generate 3 Variations')+'</button>';
+    controlsHtml+='</div>';
   }
 
-  async function handlePNG(svg, id, label) {
-    setExporting(p => ({ ...p, [id]: "png" }));
-    try { await exportPNG(svg, label); }
-    catch(e) { setError("PNG export failed."); }
-    finally { setExporting(p => ({ ...p, [id]: null })); }
+  // Icons grid
+  var gridHtml='';
+  if(icons.length>0){
+    gridHtml='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-width:900px;">';
+    icons.forEach(function(icon){
+      storeSVG(icon.id,icon.svg);
+      var fb=feedbackMap[icon.id];
+      var border=fb===1?'#2E5038':fb===-1?'#3a1a1a':'#1e1e1e';
+      gridHtml+='<div style="background:#111;border:1px solid '+border+';display:flex;flex-direction:column;align-items:center;padding:28px 16px 16px;gap:10px;">';
+      gridHtml+='<div style="width:64px;height:64px;">'+icon.svg+'</div>';
+      gridHtml+='<p style="font-size:8px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.3;text-align:center;margin:0;">'+icon.prompt+'</p>';
+      gridHtml+='<div style="display:flex;gap:6px;width:100%;">';
+      gridHtml+='<button onclick="handleFeedback('+icon.id+',1,false)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===1?'#1E3325':'#0f0f0f')+';">✓</button>';
+      gridHtml+='<button onclick="handleFeedback('+icon.id+',-1,false)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===-1?'#2a1010':'#0f0f0f')+';">✕</button>';
+      gridHtml+='</div>';
+      gridHtml+='<button id="copy-btn-'+icon.id+'" onclick="handleCopy('+icon.id+')" style="padding:6px 0;width:100%;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#151515;">Copy SVG</button>';
+      gridHtml+=makeExportDropdown(icon.id,icon.svg,icon.prompt,false,null);
+      gridHtml+='</div>';
+    });
+    gridHtml+='</div>';
+  } else if(!loading){
+    gridHtml='<p style="opacity:0.06;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-top:8px;">Press generate.</p>';
   }
 
-  async function handleGIF(svg, id, label) {
-    setExporting(p => ({ ...p, [id]: "gif" }));
-    setGifProgress(p => ({ ...p, [id]: 0 }));
-    try {
-      await exportGIF(svg, label, pct => setGifProgress(p => ({ ...p, [id]: pct })));
-    } catch(e) {
-      setError("GIF export failed.");
-    } finally {
-      setExporting(p => ({ ...p, [id]: null }));
-      setGifProgress(p => ({ ...p, [id]: 0 }));
-    }
-  }
+  app.innerHTML=batchHtml+
+    '<p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.4;margin:0 0 4px;">Butterfly Effect</p>'+
+    '<p style="font-size:10px;letter-spacing:1px;opacity:0.2;margin:0 0 28px;">Icon Generator — V4.3</p>'+
+    '<div id="feedback-meter" style="display:none;align-items:center;gap:12px;margin-bottom:20px;padding:10px 14px;background:#0e0e0e;border:1px solid #1a1a1a;flex-wrap:wrap;"></div>'+
+    '<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.2;margin-bottom:10px;">Reference Set</p>'+
+    '<div style="display:flex;gap:10px;margin-bottom:36px;flex-wrap:wrap;">'+refCardsHtml+'</div>'+
+    modeBtns+controlsHtml+
+    '<p id="error-msg" style="color:#c0392b;font-size:10px;letter-spacing:1px;margin-bottom:24px;max-width:480px;"></p>'+
+    gridHtml;
 
-  const btnBase = {
-    fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: 1.5,
-    textTransform: "uppercase", cursor: "pointer", border: "1px solid #222",
-    color: "#fff", padding: "7px 0", background: "#151515",
-    textAlign: "center", width: "100%"
-  };
+  renderMeter();
 
-  return (
-    <div style={{ minHeight: "100vh", padding: "48px" }}>
-      <p style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", opacity: 0.4, margin: "0 0 4px" }}>Butterfly Effect</p>
-      <p style={{ fontSize: 10, letterSpacing: 1, opacity: 0.2, margin: "0 0 40px" }}>Icon Generator — Hand Drawn / Animated / V.4.1</p>
-
-      <div style={{ display: "flex", gap: 12, maxWidth: 600, marginBottom: 14 }}>
-        <input
-          value={prompt}
-          onChange={e => setPrompt(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && generate()}
-          placeholder="Describe an icon — e.g. 'flame' or 'compass'..."
-          style={{ flex: 1, background: "#111", border: "1px solid #1E1E1E", color: "#fff", padding: "12px 16px", fontSize: 11, fontFamily: "Arial, sans-serif" }}
-        />
-        <button onClick={() => generate()} disabled={loading || !prompt.trim()}
-          style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase",
-            background: loading || !prompt.trim() ? "#111" : "#341C12",
-            border: `1px solid ${loading || !prompt.trim() ? "#222" : "#341C12"}`,
-            color: loading || !prompt.trim() ? "#444" : "#fff",
-            padding: "12px 24px", whiteSpace: "nowrap", cursor: loading || !prompt.trim() ? "not-allowed" : "pointer" }}
-        >{loading ? "Drawing..." : "Generate"}</button>
-      </div>
-
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, maxWidth: 600, marginBottom: 36 }}>
-        {SUGGESTIONS.map(s => (
-          <button key={s} className="suggestion-btn" onClick={() => generate(s)} disabled={loading}
-            style={{ fontFamily: "Arial, sans-serif", fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase",
-              cursor: "pointer", border: "1px solid #1E1E1E", color: "#fff", padding: "4px 10px",
-              background: "transparent", opacity: loading ? 0.15 : 0.4, transition: "all 0.2s" }}
-          >{s}</button>
-        ))}
-      </div>
-
-      {error && (
-        <div style={{ maxWidth: 600, marginBottom: 24, padding: "12px 16px", border: "1px solid #611E1F", background: "#0F0505", fontSize: 10, color: "#d44", letterSpacing: 0.5, lineHeight: 1.7 }}>
-          {error}
-        </div>
-      )}
-
-      {loading && (
-        <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", background: "#111", border: "1px solid #1E1E1E", padding: "36px 32px 24px", marginBottom: 32 }}>
-          <div style={{ width: 64, height: 64, background: "#181818", animation: "pulse 1.2s ease-in-out infinite" }} />
-          <p style={{ marginTop: 18, fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", opacity: 0.2 }}>Drawing...</p>
-        </div>
-      )}
-
-      {icons.length > 0 && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(168px, 1fr))", gap: 20 }}>
-          {icons.map(icon => {
-            const exp = exporting[icon.id];
-            const pct = gifProgress[icon.id] || 0;
-            return (
-              <div key={icon.id} className="icon-card"
-                style={{ background: "#111", border: "1px solid #1E1E1E", padding: "32px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}
-              >
-                <div style={{ width: 72, height: 72, display: "flex", alignItems: "center", justifyContent: "center" }}
-                  dangerouslySetInnerHTML={{ __html: icon.svg }} />
-                <p style={{ fontSize: 9, letterSpacing: 1.2, textTransform: "uppercase", opacity: 0.3, textAlign: "center", margin: 0, lineHeight: 1.6 }}>{icon.prompt}</p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, width: "100%" }}>
-                  <button className="export-btn" onClick={() => copyIcon(icon.svg, icon.id)}
-                    style={{ ...btnBase, background: copied === icon.id ? "#1E3325" : "#151515", borderColor: copied === icon.id ? "#2E5038" : "#222" }}
-                  >{copied === icon.id ? "Copied" : "Copy"}</button>
-                  <button className="export-btn" onClick={() => downloadSVG(icon.svg, icon.prompt)} style={btnBase}>SVG</button>
-                  <button className="export-btn" onClick={() => handlePNG(icon.svg, icon.id, icon.prompt)} disabled={!!exp}
-                    style={{ ...btnBase, background: exp === "png" ? "#1A1A2A" : "#151515" }}
-                  >{exp === "png" ? "Saving..." : "PNG"}</button>
-                  <button className="export-btn" onClick={() => handleGIF(icon.svg, icon.id, icon.prompt)} disabled={!!exp}
-                    style={{ ...btnBase, position: "relative", overflow: "hidden" }}
-                  >
-                    {exp === "gif" && <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: "#341C12", opacity: 0.5 }} />}
-                    <span style={{ position: "relative" }}>{exp === "gif" ? `${pct}%` : "GIF"}</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {icons.length === 0 && !loading && (
-        <p style={{ opacity: 0.08, fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase" }}>Icons will appear here.</p>
-      )}
-    </div>
-  );
+  // Start canvas animations (only if not already running)
+  var sc=document.getElementById('canvas-spiral-ref');
+  if(sc&&!sc._running){sc._running=true;runSpiral(sc);}
+  var nc=document.getElementById('canvas-network-ref');
+  if(nc&&!nc._running){nc._running=true;runNetwork(nc);}
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+function setMode(m){mode=m;render();}
+
+// Init
+render();
 </script>
 </body>
 </html>
