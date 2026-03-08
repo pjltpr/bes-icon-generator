@@ -205,17 +205,17 @@ function runNetwork(canvas){
 }
 
 function runSpiral(canvas){
-  var ctx=canvas.getContext('2d'),W=72,H=72,cx=36,cy=38;
-  var rotY=0,rotX=-0.3,time=0,head=0,tail=0,holdTimer=0,phase='drawing',last=null;
+  var ctx=canvas.getContext('2d'),W=72,H=72,cx=36,cy=36;
+  var rotY=0,rotX=-0.25,time=0,head=0,tail=0,holdTimer=0,phase='drawing',last=null;
   var layers=makeSpiralLayers();
   var speedTable=(function(){var t=[],s=0;for(var i=0;i<=STEPS;i++){var v=i/STEPS,sp=0.72+0.28*v+0.12*Math.sin(v*TURNS*Math.PI*2);t.push(s);s+=sp;}for(var j=0;j<=STEPS;j++)t[j]/=s;return t;})();
   function pIdx(p){var lo=0,hi=STEPS;while(lo<hi){var m=(lo+hi)>>1;if(speedTable[m]<p)lo=m+1;else hi=m;}return lo;}
   function ease(t){return t<0.5?2*t*t:-1+(4-2*t)*t;}
-  function proj(x,y,z,rX,rY){var x1=x*Math.cos(rY)-z*Math.sin(rY),z1=x*Math.sin(rY)+z*Math.cos(rY),y2=y*Math.cos(rX)-z1*Math.sin(rX),z2=y*Math.sin(rX)+z1*Math.cos(rX),fov=3.2,pz=fov/(fov+z2*0.01);return{sx:x1*1.28*pz,sy:y2*1.28*pz,depth:z2};}
+  function proj(x,y,z,rX,rY){var x1=x*Math.cos(rY)-z*Math.sin(rY),z1=x*Math.sin(rY)+z*Math.cos(rY),y2=y*Math.cos(rX)-z1*Math.sin(rX),z2=y*Math.sin(rX)+z1*Math.cos(rX),fov=3.8,pz=fov/(fov+z2*0.01);return{sx:x1*1.0*pz,sy:y2*1.0*pz,depth:z2};}
   function frame(ts){
     if(!last)last=ts;var dt=Math.min((ts-last)/1000,0.05);last=ts;time+=dt;
     rotY+=(0.42+0.18*Math.sin(time*0.7)+0.08*Math.sin(time*1.3))*dt;
-    rotX=-0.3+0.06*Math.sin(time*0.23)+0.03*Math.sin(time*0.41);
+    rotX=-0.25+0.05*Math.sin(time*0.23)+0.02*Math.sin(time*0.41);
     if(phase==='drawing'){head=Math.min(1,head+dt*0.36);if(head>=1){phase='holding';holdTimer=0;}}
     else if(phase==='holding'){holdTimer+=dt;if(holdTimer>1.4)phase='dissolving';}
     else{tail=Math.min(1,tail+dt*0.28);if(tail>=1){head=0;tail=0;phase='drawing';layers=makeSpiralLayers();}}
@@ -224,16 +224,16 @@ function runSpiral(canvas){
       var hN=pIdx(Math.min(0.9999,ease(Math.min(1,Math.max(0,head-layer.lag))))),tN=pIdx(Math.min(0.9999,ease(Math.min(1,Math.max(0,tail-layer.lag*0.5)))));
       if(hN<2)return;
       for(var i=tN;i<hN-1;i++){
-        var t0=i/STEPS,t1=(i+1)/STEPS,a0=t0*TURNS*Math.PI*2,r0=t0*16,a1=t1*TURNS*Math.PI*2,r1=t1*16;
-        var p0=proj(Math.cos(a0)*r0+layer.wx[i],(1-t0)*30-15+layer.wy[i],Math.sin(a0)*r0,rotX,rotY);
-        var p1=proj(Math.cos(a1)*r1+layer.wx[i+1],(1-t1)*30-15+layer.wy[i+1],Math.sin(a1)*r1,rotX,rotY);
+        var t0=i/STEPS,t1=(i+1)/STEPS,a0=t0*TURNS*Math.PI*2,r0=t0*12,a1=t1*TURNS*Math.PI*2,r1=t1*12;
+        var p0=proj(Math.cos(a0)*r0+layer.wx[i],(1-t0)*22-11+layer.wy[i],Math.sin(a0)*r0,rotX,rotY);
+        var p1=proj(Math.cos(a1)*r1+layer.wx[i+1],(1-t1)*22-11+layer.wy[i+1],Math.sin(a1)*r1,rotX,rotY);
         var tE=Math.min(1,(i-tN)/14),hE=Math.min(1,(hN-i)/20),dF=Math.max(0.25,Math.min(1,(p0.depth+18)/36)),tp=(0.7+0.3*Math.sin(t0*Math.PI))*(0.88+Math.random()*0.24);
         ctx.beginPath();ctx.moveTo(cx+p0.sx,cy+p0.sy);ctx.lineTo(cx+p1.sx,cy+p1.sy);
         ctx.strokeStyle='rgba(255,255,255,'+(layer.opacity*dF*tE*hE)+')';ctx.lineWidth=layer.lw*tp;ctx.lineCap='round';ctx.stroke();
       }
     });
     var aF=Math.min(1,head*4)*(tail>0?Math.max(0,1-tail*3):1);
-    if(aF>0.02){var ap=proj(0,15,0,rotX,rotY);ctx.beginPath();ctx.arc(cx+ap.sx,cy+ap.sy,1.2,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+(0.9*aF)+')';ctx.fill();}
+    if(aF>0.02){var ap=proj(0,11,0,rotX,rotY);ctx.beginPath();ctx.arc(cx+ap.sx,cy+ap.sy,1.2,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+(0.9*aF)+')';ctx.fill();}
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
@@ -323,21 +323,40 @@ function makeExportDropdown(id,svg,name,isCanvas,canvasRef){
   var gifBusy=!!gifLoadingIds[id];
   var html='<div data-dropdown="'+id+'" style="position:relative;width:100%;">';
   html+='<button onclick="toggleDropdown(\''+id+'\')" style="width:100%;padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Export ▾</button>';
-  html+='<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#111;border:1px solid #2a2a2a;z-index:100;padding:6px;flex-direction:column;gap:5px;">';
+  html+='<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#111;border:1px solid #333;z-index:100;padding:8px 6px;min-width:160px;">';
+  // Header row
+  html+='<div style="display:grid;grid-template-columns:1fr 40px 40px 40px;gap:3px;margin-bottom:5px;padding-bottom:5px;border-bottom:1px solid #222;">';
+  html+='<div></div>';
+  html+='<div style="font-size:6px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.3;text-align:center;">PNG</div>';
+  html+='<div style="font-size:6px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:'+(isCanvas?0.1:0.3)+';text-align:center;">SVG</div>';
+  html+='<div style="font-size:6px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.3;text-align:center;">GIF</div>';
+  html+='</div>';
   VARIANTS.forEach(function(v){
-    html+='<div><div style="font-size:6px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.2;margin-bottom:2px;">'+v.label+'</div>';
-    html+='<div style="display:flex;gap:3px;">';
-    html+='<button onclick="downloadPNG(\''+escapeSVGForAttr(svg)+'\',\''+name+'\',\''+v.id+'\');toggleDropdown(\''+id+'\')" style="flex:1;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 0;">PNG</button>';
+    html+='<div style="display:grid;grid-template-columns:1fr 40px 40px 40px;gap:3px;margin-bottom:3px;align-items:center;">';
+    html+='<div style="font-size:6px;letter-spacing:0.8px;text-transform:uppercase;color:#fff;opacity:0.25;padding-right:4px;line-height:1.3;">'+v.label+'</div>';
+    // PNG
+    html+='<button onclick="downloadPNG(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">↓</button>';
+    // SVG
     if(!isCanvas){
-      html+='<button onclick="downloadSVG(\''+escapeSVGForAttr(svg)+'\',\''+name+'\',\''+v.id+'\');toggleDropdown(\''+id+'\')" style="flex:1;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 0;">SVG</button>';
+      html+='<button onclick="downloadSVGById(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">↓</button>';
     } else {
-      html+='<button disabled style="flex:1;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 0;opacity:0.15;cursor:not-allowed;">SVG</button>';
+      html+='<button disabled style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;border:1px solid #222;color:#fff;background:#0f0f0f;opacity:0.12;cursor:not-allowed;">–</button>';
     }
-    html+='<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\''+v.id+'\',\''+escapeSVGForAttr(svg)+'\',\''+name+'\','+isCanvas+');toggleDropdown(\''+id+'\')" style="flex:1;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:4px 0;opacity:'+(gifBusy?'0.3':'1')+';">'+(gifBusy?'...':'GIF')+'</button>';
-    html+='</div></div>';
+    // GIF
+    html+='<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\''+v.id+'\',\''+name+'\','+isCanvas+');toggleDropdown(\''+id+'\')" style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;opacity:'+(gifBusy?0.3:1)+';">'+(gifBusy?'…':'↓')+'</button>';
+    html+='</div>';
   });
   html+='</div></div>';
   return html;
+}
+
+function downloadPNG(variant,id,name){
+  var svg=svgStore[id];
+  if(svg)downloadPNGfromSVG(svg,name,variant);
+}
+function downloadSVGById(variant,id,name){
+  var svg=svgStore[id];
+  if(svg)downloadSVG(svg,name,variant);
 }
 
 // We store SVGs in a map to avoid inline escaping issues
@@ -458,17 +477,11 @@ function render(){
     refCardsHtml+=makeExportDropdown(item.key,item.svg,item.label.toLowerCase(),false,null);
     refCardsHtml+='</div>';
   });
-  // Spiral canvas card
+  // Spiral canvas card only — no duplicate Network canvas
   refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
-  refCardsHtml+='<canvas id="canvas-spiral-ref" width="48" height="48" style="width:48px;height:48px;"></canvas>';
+  refCardsHtml+='<canvas id="canvas-spiral-ref" width="72" height="72" style="width:48px;height:48px;"></canvas>';
   refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">Spiral</span>';
   refCardsHtml+=makeExportDropdown('spiral-ref','','spiral',true,null);
-  refCardsHtml+='</div>';
-  // Network canvas card
-  refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
-  refCardsHtml+='<canvas id="canvas-network-ref" width="48" height="48" style="width:48px;height:48px;"></canvas>';
-  refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">Network</span>';
-  refCardsHtml+=makeExportDropdown('network-ref','','network',true,null);
   refCardsHtml+='</div>';
 
   // Mode buttons
