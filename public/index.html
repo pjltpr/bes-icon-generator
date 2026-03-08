@@ -269,7 +269,7 @@ function pickThreeDistinct(){
 function extractSVG(r){r=r.replace(/^```[\w]*\n?/gm,'').replace(/\n?```$/gm,'').trim();var m=r.match(/<svg[\s\S]*<\/svg>/i);return m?m[0]:r;}
 
 async function generateOne(subject){
-  var res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:buildSystemPrompt(),prompt:'Subject: '+subject+'\n\nStep 1 - identify the single most iconic geometric element.\nStep 2 - assign to a canonical family.\nStep 3 - inherit that family\'s construction logic from the reference.\nStep 4 - output the SVG and nothing else.'})});
+  var res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:subject,profileDirective:profileToDirective()})});
   var data=await res.json();
   if(data.error)throw new Error(data.error);
   var svg=extractSVG(data.text||'');
@@ -279,11 +279,16 @@ async function generateOne(subject){
 
 async function generate(subject){
   if(loading)return;
-  loading=true;render();
+  loading=true;showError('');render();
   try{
     var subjects=subject?[subject,subject,subject]:pickThreeDistinct();
     lastSubject=subjects[0];
-    var results=await Promise.all(subjects.map(generateOne));
+    // Sequential — one at a time to stay within Groq TPM limits
+    var results=[];
+    for(var i=0;i<subjects.length;i++){
+      var icon=await generateOne(subjects[i]);
+      results.push(icon);
+    }
     batchIcons=results;
   }catch(e){showError(e.message||'Generation failed.');}
   loading=false;render();
