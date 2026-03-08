@@ -68,6 +68,7 @@ function profileToDirective(){
   if(p.dislikedSubjects.length)lines.push('- Lean away from: '+p.dislikedSubjects.join(', '));
   return lines.join('\n');
 }
+
 function buildSystemPrompt(){
   return 'You are an SVG animation artist for Butterfly Effect Studio (BES). You create animated icons — white strokes on transparent background, no fills except small dot accents, with a fractalNoise displacement filter.\n\n'+profileToDirective()+'\n\nBEFORE YOU DRAW — REASON FIRST\nStep 1: Identify the single most iconic, geometrically reducible element of the subject.\nStep 2: Decide which canonical family: SPIRAL, RIPPLE, ATTRACTOR, NETWORK, or GRID.\nStep 3: Inherit that family\'s exact construction logic from its reference icon.\nStep 4: Output SVG only.\n\nTHE BES VISUAL SYSTEM\n1. SEED PATHS — 3 to 8 paths. One iconic element, rendered simply.\n2. ECHO LAYERS — every seed path echoed 2-3 times. Opacity: 1.0 > 0.6 > 0.35 > 0.2. Stagger 0.25-0.35s.\n3. REVEAL — stroke-dasharray + stroke-dashoffset. Draw on, hold, fade. All infinite.\n4. DISPLACEMENT — one fractalNoise feDisplacementMap. Unique filter id and class prefixes. Scale 1.0-1.6.\n5. STROKES — Primary: 0.9-1.3. Echo 1: 0.55-0.7. Echo 2: 0.3-0.45. Echo 3: 0.2-0.3. stroke-linecap="round" everywhere.\n6. DOT — one filled circle r 1.0-1.8 at a meaningful anchor.\n\nKeyframe template:\n@keyframes X{0%{stroke-dashoffset:[len];opacity:0}10%{opacity:1}65%{stroke-dashoffset:0;opacity:1}85%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:[len];opacity:0}}\n\nCANONICAL REFERENCES\nSPIRAL: '+SPIRAL_SVG+'\nRIPPLE: '+RIPPLE_SVG+'\nATTRACTOR: '+ATTRACTOR_SVG+'\nNETWORK: '+NETWORK_SVG+'\nGRID: '+GRID_SVG+'\n\nHARD RULES\n- Output ONLY raw SVG. No markdown, no backticks, no explanation.\n- Opening tag: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64">\n- All styles inside <defs><style></style></defs>\n- White strokes only. No fills except dot accents. stroke-linecap="round" everywhere.\n- Unique filter id and class prefixes. Never reuse fa, fr, fg, fn, fsp.\n- All animations infinite. Never static. Never skip echo system. One SVG only.';
 }
@@ -151,7 +152,7 @@ function applyVariant(s,variant){
   return s;
 }
 function downloadSVG(svgString,name,variant){var s=applyVariant(svgString,variant);var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));a.download=name+'-'+variant+'.svg';a.click();}
-function downloadPNG(svgString,name,variant,size){
+function downloadPNGfromSVG(svgString,name,variant,size){
   size=size||512;var s=applyVariant(svgString,variant),bgColor=variant==='white-black'?'#0a0a0a':variant==='black-white'?'#ffffff':null;
   var url=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));
   var img=new Image();img.src=url;
@@ -248,6 +249,7 @@ var mode='random';
 var lastSubject='';
 var feedbackMap={};
 var copiedId=null;
+var queuePosition=0;
 
 var SUBJECT_POOL=["wave","tornado","whirlpool","lightning bolt","ripple","current","vortex","gust of wind","updraft","aurora","solar system","black hole","comet","nebula","orbit","eclipse","pulsar","galaxy spiral","shooting star","event horizon","leaf","fern","coral","seed pod","vine","petal","root system","lotus","moss","spore","flame","smoke","snowflake","ice crystal","steam","ember","frost","raindrop","bubble","tide","infinity loop","spiral","spider web","compass rose","labyrinth","fractal","helix","interference pattern","signal wave","feedback loop","jellyfish","snake","butterfly","bird in flight","dragonfly","firefly","moth","nautilus","sea anemone","manta ray","eye","feather","hourglass","prism","thread","signal burst","chain","rippling membrane","echo"];
 var THEMES=["butterfly","cocoon","metamorphosis","emergence","signal","chaos","threshold","cascade","entanglement"];
@@ -268,8 +270,17 @@ function pickThreeDistinct(){
 
 function extractSVG(r){r=r.replace(/^```[\w]*\n?/gm,'').replace(/\n?```$/gm,'').trim();var m=r.match(/<svg[\s\S]*<\/svg>/i);return m?m[0]:r;}
 
-async function generateOne(subject){
-  var res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:subject,profileDirective:profileToDirective()})});
+async function generateOne(subject, index, total){
+  queuePosition=index+1;
+  render();
+  var res=await fetch('/api/generate',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      system: buildSystemPrompt(),
+      prompt: 'Subject: '+subject+'\n\nStep 1 - identify the single most iconic geometric element.\nStep 2 - assign to a canonical family.\nStep 3 - inherit that family\'s construction logic from the reference.\nStep 4 - output the SVG and nothing else.'
+    })
+  });
   var data=await res.json();
   if(data.error)throw new Error(data.error);
   var svg=extractSVG(data.text||'');
@@ -279,22 +290,21 @@ async function generateOne(subject){
 
 async function generate(subject){
   if(loading)return;
-  loading=true;showError('');render();
+  loading=true;queuePosition=0;showError('');render();
   try{
     var subjects=subject?[subject,subject,subject]:pickThreeDistinct();
     lastSubject=subjects[0];
-    // Sequential — one at a time to stay within Groq TPM limits
     var results=[];
     for(var i=0;i<subjects.length;i++){
-      var icon=await generateOne(subjects[i]);
+      var icon=await generateOne(subjects[i],i,subjects.length);
       results.push(icon);
     }
     batchIcons=results;
   }catch(e){showError(e.message||'Generation failed.');}
-  loading=false;render();
+  loading=false;queuePosition=0;render();
 }
 
-function showError(msg){document.getElementById('error-msg').textContent=msg;}
+function showError(msg){var el=document.getElementById('error-msg');if(el)el.textContent=msg;}
 
 // ── Export dropdowns ──
 var openDropdownId=null;
@@ -324,7 +334,6 @@ function makeExportDropdown(id,svg,name,isCanvas,canvasRef){
   var html='<div data-dropdown="'+id+'" style="position:relative;width:100%;">';
   html+='<button onclick="toggleDropdown(\''+id+'\')" style="width:100%;padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Export ▾</button>';
   html+='<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#111;border:1px solid #333;z-index:100;padding:8px 6px;min-width:160px;">';
-  // Header row
   html+='<div style="display:grid;grid-template-columns:1fr 40px 40px 40px;gap:3px;margin-bottom:5px;padding-bottom:5px;border-bottom:1px solid #222;">';
   html+='<div></div>';
   html+='<div style="font-size:6px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.3;text-align:center;">PNG</div>';
@@ -334,16 +343,13 @@ function makeExportDropdown(id,svg,name,isCanvas,canvasRef){
   VARIANTS.forEach(function(v){
     html+='<div style="display:grid;grid-template-columns:1fr 40px 40px 40px;gap:3px;margin-bottom:3px;align-items:center;">';
     html+='<div style="font-size:6px;letter-spacing:0.8px;text-transform:uppercase;color:#fff;opacity:0.25;padding-right:4px;line-height:1.3;">'+v.label+'</div>';
-    // PNG
     html+='<button onclick="downloadPNG(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">↓</button>';
-    // SVG
     if(!isCanvas){
       html+='<button onclick="downloadSVGById(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">↓</button>';
     } else {
-      html+='<button disabled style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;border:1px solid #222;color:#fff;background:#0f0f0f;opacity:0.12;cursor:not-allowed;">–</button>';
+      html+='<button disabled style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;border:1px solid #222;color:#fff;background:#0f0f0f;opacity:0.12;cursor:not-allowed;">-</button>';
     }
-    // GIF
-    html+='<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\''+v.id+'\',\''+name+'\','+isCanvas+');toggleDropdown(\''+id+'\')" style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;opacity:'+(gifBusy?0.3:1)+';">'+(gifBusy?'…':'↓')+'</button>';
+    html+='<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\''+v.id+'\',\''+name+'\','+isCanvas+');toggleDropdown(\''+id+'\')" style="padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;opacity:'+(gifBusy?0.3:1)+';">'+(gifBusy?'...':'↓')+'</button>';
     html+='</div>';
   });
   html+='</div></div>';
@@ -359,25 +365,19 @@ function downloadSVGById(variant,id,name){
   if(svg)downloadSVG(svg,name,variant);
 }
 
-// We store SVGs in a map to avoid inline escaping issues
 var svgStore={};
 function storeSVG(id,svg){svgStore[id]=svg;return id;}
 function getSVG(id){return svgStore[id]||'';}
 
-function escapeSVGForAttr(svg){
-  // Store and return key instead of inlining SVG in onclick
-  return svg; // handled via svgStore
-}
-
-async function handleGIFExport(id,variant,svgOrEmpty,name,isCanvas){
+async function handleGIFExport(id,variant,name,isCanvas){
   gifLoadingIds[id]=true;render();
   try{
     if(isCanvas){
       var canvas=document.getElementById('canvas-'+id);
       if(canvas)await captureCanvasGIF(canvas,name,variant);
     } else {
-      var svg=svgStore[id]||svgOrEmpty;
-      await captureSVGGIF(svg,name,variant);
+      var svg=svgStore[id];
+      if(svg)await captureSVGGIF(svg,name,variant);
     }
   }catch(e){console.error(e);}
   delete gifLoadingIds[id];render();
@@ -429,12 +429,23 @@ function renderMeter(){
   var subjectsHtml='';
   if(profile.likedSubjects.length>0)subjectsHtml+='<div style="font-size:6px;letter-spacing:1px;color:rgba(80,160,100,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">+'+profile.likedSubjects.slice(0,3).join(', ')+'</div>';
   if(profile.dislikedSubjects.length>0)subjectsHtml+='<div style="font-size:6px;letter-spacing:1px;color:rgba(160,60,60,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">-'+profile.dislikedSubjects.slice(0,3).join(', ')+'</div>';
-  el.innerHTML='<div style="display:flex;flex-direction:column;gap:3px;"><span style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.25;">Style signal</span><div style="display:flex;gap:2px;align-items:flex-end;height:14px;">'+barsHtml+'</div><span style="font-size:6px;letter-spacing:1px;opacity:0.3;">'+(learned?topFamily:'learning...')+'</span></div><div style="width:1px;height:28px;background:#222;"></div><div style="display:flex;flex-direction:column;gap:3px;"><span style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.25;">Feedback log</span><div style="display:flex;gap:1.5px;align-items:center;height:14px;">'+sparkHtml+'</div><span style="font-size:6px;letter-spacing:1px;opacity:0.3;">'+likeCount+'✓ '+dislikeCount+'✕ of '+log.length+'</span></div>'+(subjectsHtml?'<div style="width:1px;height:28px;background:#222;"></div><div style="display:flex;flex-direction:column;gap:3px;">'+subjectsHtml+'</div>':'')+'<div style="margin-left:auto;"><button onclick="resetProfile()" style="font-family:Arial,sans-serif;font-size:6px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:3px 7px;opacity:0.3;">Reset</button></div>';
+  el.innerHTML='<div style="display:flex;flex-direction:column;gap:3px;"><span style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.25;">Style signal</span><div style="display:flex;gap:2px;align-items:flex-end;height:14px;">'+barsHtml+'</div><span style="font-size:6px;letter-spacing:1px;opacity:0.3;">'+(learned?topFamily:'learning...')+'</span></div><div style="width:1px;height:28px;background:#222;"></div><div style="display:flex;flex-direction:column;gap:3px;"><span style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.25;">Feedback log</span><div style="display:flex;gap:1.5px;align-items:center;height:14px;">'+sparkHtml+'</div><span style="font-size:6px;letter-spacing:1px;opacity:0.3;">'+likeCount+' of '+log.length+'</span></div>'+(subjectsHtml?'<div style="width:1px;height:28px;background:#222;"></div><div style="display:flex;flex-direction:column;gap:3px;">'+subjectsHtml+'</div>':'')+'<div style="margin-left:auto;"><button onclick="resetProfile()" style="font-family:Arial,sans-serif;font-size:6px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:3px 7px;opacity:0.3;">Reset</button></div>';
 }
 
 // ── Main render ──
 function render(){
   var app=document.getElementById('app');
+
+  // Loading status message
+  var loadingStatusHtml='';
+  if(loading){
+    var statusMsg=queuePosition>0?'Generating icon '+queuePosition+' of 3...':'Starting generation...';
+    loadingStatusHtml='<div style="max-width:480px;margin-bottom:16px;padding:10px 14px;background:#0e0e0e;border:1px solid #1a1a1a;display:flex;align-items:center;gap:10px;">'
+      +'<div style="width:6px;height:6px;background:#341C12;border-radius:50%;animation:pulse 1s ease-in-out infinite;"></div>'
+      +'<span style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.4;">'+statusMsg+'</span>'
+      +'<style>@keyframes pulse{0%,100%{opacity:0.3}50%{opacity:1}}</style>'
+      +'</div>';
+  }
 
   // Batch overlay
   var batchHtml='';
@@ -461,7 +472,7 @@ function render(){
     batchHtml+='</div>';
   }
 
-  // Reference canvases (preserve if already in DOM)
+  // Reference cards
   var refCardsHtml='';
   var refItems=[
     {key:'attr',label:'Attractor',svg:ATTRACTOR_SVG},
@@ -477,7 +488,6 @@ function render(){
     refCardsHtml+=makeExportDropdown(item.key,item.svg,item.label.toLowerCase(),false,null);
     refCardsHtml+='</div>';
   });
-  // Spiral canvas card only — no duplicate Network canvas
   refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
   refCardsHtml+='<canvas id="canvas-spiral-ref" width="72" height="72" style="width:48px;height:48px;"></canvas>';
   refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">Spiral</span>';
@@ -531,17 +541,16 @@ function render(){
 
   app.innerHTML=batchHtml+
     '<p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.4;margin:0 0 4px;">Butterfly Effect</p>'+
-    '<p style="font-size:10px;letter-spacing:1px;opacity:0.2;margin:0 0 28px;">Icon Generator — V4.3</p>'+
+    '<p style="font-size:10px;letter-spacing:1px;opacity:0.2;margin:0 0 28px;">Icon Generator — V4.4</p>'+
     '<div id="feedback-meter" style="display:none;align-items:center;gap:12px;margin-bottom:20px;padding:10px 14px;background:#0e0e0e;border:1px solid #1a1a1a;flex-wrap:wrap;"></div>'+
     '<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.2;margin-bottom:10px;">Reference Set</p>'+
     '<div style="display:flex;gap:10px;margin-bottom:36px;flex-wrap:wrap;">'+refCardsHtml+'</div>'+
-    modeBtns+controlsHtml+
+    modeBtns+controlsHtml+loadingStatusHtml+
     '<p id="error-msg" style="color:#c0392b;font-size:10px;letter-spacing:1px;margin-bottom:24px;max-width:480px;"></p>'+
     gridHtml;
 
   renderMeter();
 
-  // Start canvas animations (only if not already running)
   var sc=document.getElementById('canvas-spiral-ref');
   if(sc&&!sc._running){sc._running=true;runSpiral(sc);}
   var nc=document.getElementById('canvas-network-ref');
@@ -550,7 +559,6 @@ function render(){
 
 function setMode(m){mode=m;render();}
 
-// Init
 render();
 </script>
 </body>
