@@ -17,6 +17,13 @@ app.post("/api/generate", async (req, res) => {
     return res.status(400).json({ error: "Missing system or prompt" });
   }
 
+  if (!process.env.GROQ_API_KEY) {
+    console.error("GROQ_API_KEY is not set");
+    return res.status(500).json({ error: "GROQ_API_KEY is not configured on the server." });
+  }
+
+  console.log(`[generate] subject prompt: ${prompt.slice(0, 80)}`);
+
   try {
     const response = await fetch(GROQ_API_URL, {
       method: "POST",
@@ -36,12 +43,21 @@ app.post("/api/generate", async (req, res) => {
     });
 
     const data = await response.json();
+    console.log(`[generate] Groq status: ${response.status}`);
 
-    if (data.error) {
-      return res.status(500).json({ error: data.error.message || "Groq error" });
+    if (!response.ok || data.error) {
+      const msg = data.error?.message || JSON.stringify(data);
+      console.error("[generate] Groq error:", msg);
+      return res.status(500).json({ error: msg });
     }
 
     const text = data.choices?.[0]?.message?.content || "";
+    if (!text) {
+      console.error("[generate] Empty response from Groq", JSON.stringify(data));
+      return res.status(500).json({ error: "Empty response from Groq." });
+    }
+
+    console.log(`[generate] Success, response length: ${text.length}`);
     res.json({ text });
   } catch (err) {
     console.error("Groq request failed:", err);
