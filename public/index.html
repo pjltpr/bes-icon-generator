@@ -83,7 +83,7 @@ function buildSystemPrompt(){
 }
 
 function buildGeometryPrompt(subject){
-  return 'Subject: '+subject+'\n\nDescribe the essential geometry of this subject. What is its most characteristic shape? What SVG primitives would honestly represent it — ellipses, lines, or curves? What is its dominant direction or motion? Be specific about proportions and composition within a 64x64 space. Do not write any code.';
+  return 'Subject: '+subject+'\n\nYou are deciding the geometry for an animated icon. Answer these three questions, then give a final composition description:\n\n1. SILHOUETTE: What is the most recognizable, accurate silhouette of this subject? If someone saw only the outline, what would make it instantly identifiable?\n\n2. DRAMA: Beyond the obvious shape, what is the most visually compelling geometric interpretation? What does this subject DO — does it compress, expand, branch, spiral, fall, orbit, pulse? Find the motion or tension inside the form.\n\n3. COMPOSITION: How do silhouette accuracy and visual drama combine into a single geometric description? What SVG primitives honestly match — ellipses for rings, lines for edges, paths for curves? Give exact proportions within a 64x64 space.\n\nNo code. No SVG. Plain text only.';
 }
 
 function buildRenderPrompt(subject){
