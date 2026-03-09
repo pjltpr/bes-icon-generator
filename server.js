@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
-
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "4mb" }));
@@ -21,7 +20,7 @@ async function callGroq(systemPrompt, userPrompt, retries = 3) {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 4000,
+        max_tokens: 1000,
         temperature: 1,
         messages: [
           { role: "system", content: systemPrompt },
@@ -29,9 +28,7 @@ async function callGroq(systemPrompt, userPrompt, retries = 3) {
         ],
       }),
     });
-
     const data = await response.json();
-
     if (response.status === 429) {
       const waitMatch = data.error?.message?.match(/try again in ([\d.]+)s/);
       const waitMs = waitMatch ? Math.ceil(parseFloat(waitMatch[1]) * 1000) + 500 : 15000;
@@ -39,11 +36,9 @@ async function callGroq(systemPrompt, userPrompt, retries = 3) {
       await new Promise(r => setTimeout(r, waitMs));
       continue;
     }
-
     if (!response.ok || data.error) {
       throw new Error(data.error?.message || `Groq error ${response.status}`);
     }
-
     const text = data.choices?.[0]?.message?.content || "";
     if (!text) throw new Error("Empty response from Groq.");
     return text;
@@ -52,23 +47,29 @@ async function callGroq(systemPrompt, userPrompt, retries = 3) {
 }
 
 app.post("/api/generate", async (req, res) => {
-  const { system, prompt } = req.body;
-
-  if (!system || !prompt) {
-    return res.status(400).json({ error: "Missing system or prompt" });
+  const { subject, systemPrompt, geometryPrompt, renderPrompt } = req.body;
+  if (!subject || !systemPrompt || !geometryPrompt || !renderPrompt) {
+    return res.status(400).json({ error: "Missing required fields" });
   }
-
   if (!process.env.GROQ_API_KEY) {
-    console.error("GROQ_API_KEY is not set");
     return res.status(500).json({ error: "GROQ_API_KEY is not configured on the server." });
   }
 
-  console.log(`[generate] ${prompt.slice(0, 80)}`);
-
   try {
-    const text = await callGroq(system, prompt);
-    console.log(`[generate] success, length: ${text.length}`);
-    res.json({ text });
+    // Call 1: geometry decision only, no SVG reference
+    console.log(`[geometry] ${subject}`);
+    const geometry = await callGroq(
+      "You are a geometric observer. When given a subject, you describe its essential geometry in plain text. Be specific and concrete. No SVG, no code, no markdown. Just a clear geometric description in 3-5 sentences.",
+      geometryPrompt
+    );
+    console.log(`[geometry] done: ${geometry.slice(0, 120)}`);
+
+    // Call 2: render using geometry spec + style reference
+    console.log(`[render] ${subject}`);
+    const svg = await callGroq(systemPrompt, renderPrompt.replace("{{GEOMETRY}}", geometry));
+    console.log(`[render] done, length: ${svg.length}`);
+
+    res.json({ text: svg, geometry });
   } catch (err) {
     console.error(`[generate] error:`, err.message);
     res.status(500).json({ error: err.message });
