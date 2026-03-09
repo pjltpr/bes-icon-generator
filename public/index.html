@@ -24,114 +24,113 @@ var SP_D1=makeSpiral(SP_CX,SP_CY,SP_TURNS,SP_R,SP_STEPS);
 var SP_D2=makeSpiral(SP_CX,SP_CY,SP_TURNS,SP_R-0.8,SP_STEPS);
 var SP_D3=makeSpiral(SP_CX,SP_CY,SP_TURNS,SP_R-1.4,SP_STEPS);
 var SP_DASH=spiralDashLen(SP_TURNS,SP_R,SP_STEPS);
-var SPIRAL_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fsp" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.052" numOctaves="4" seed="14" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.4" xChannelSelector="R" yChannelSelector="G"/></filter><style>.sp1{stroke-dasharray:'+SP_DASH+';stroke-dashoffset:'+SP_DASH+';animation:spD 4s ease-in-out infinite}.sp2{stroke-dasharray:'+SP_DASH+';stroke-dashoffset:'+SP_DASH+';animation:spD 4s 0.3s ease-in-out infinite;opacity:0.52}.sp3{stroke-dasharray:'+SP_DASH+';stroke-dashoffset:'+SP_DASH+';animation:spD 4s 0.6s ease-in-out infinite;opacity:0.25}@keyframes spD{0%{stroke-dashoffset:'+SP_DASH+';opacity:0}10%{opacity:1}62%{stroke-dashoffset:0;opacity:1}80%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:'+SP_DASH+';opacity:0}}</style></defs><g filter="url(#fsp)"><path class="sp1" d="'+SP_D1+'" stroke="white" stroke-width="1.1" stroke-linecap="round" fill="none"/><path class="sp2" d="'+SP_D2+'" stroke="white" stroke-width="0.6" stroke-linecap="round" fill="none"/><path class="sp3" d="'+SP_D3+'" stroke="white" stroke-width="0.32" stroke-linecap="round" fill="none"/><circle cx="'+SP_CX+'" cy="'+SP_CY+'" r="1.3" fill="white" opacity="0.85"/></g></svg>';
-var ATTRACTOR_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fa" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/></filter><style>.ap1{stroke-dasharray:300;stroke-dashoffset:300;animation:aD 3s ease-in-out infinite alternate}.ap2{stroke-dasharray:200;stroke-dashoffset:200;animation:aD 3s 0.4s ease-in-out infinite alternate;opacity:0.5}.ap3{stroke-dasharray:160;stroke-dashoffset:160;animation:aD 3s 0.8s ease-in-out infinite alternate;opacity:0.3}@keyframes aD{0%{stroke-dashoffset:300;opacity:0}20%{opacity:1}100%{stroke-dashoffset:0}}</style></defs><g filter="url(#fa)"><path class="ap1" d="M32 32 C20 20,8 24,10 34 C12 44,26 44,32 32 C38 20,52 18,54 28 C56 38,44 46,32 32" stroke="white" stroke-width="1" stroke-linecap="round"/><path class="ap2" d="M32 32 C22 22,12 28,14 36 C16 44,28 42,32 32 C36 22,48 20,50 30 C52 40,40 46,32 32" stroke="white" stroke-width="0.6" stroke-linecap="round"/><path class="ap3" d="M32 32 C24 24,16 30,18 38 C20 44,30 42,32 32 C34 24,44 22,46 30 C48 38,38 44,32 32" stroke="white" stroke-width="0.4" stroke-linecap="round"/><circle cx="32" cy="32" r="1.2" fill="white" opacity="0.6"/></g></svg>';
-var RIPPLE_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fr" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.1" xChannelSelector="R" yChannelSelector="G"/></filter><style>.r1{animation:rD 3s 0s ease-in-out infinite alternate}.r2{animation:rD 3s 0.6s ease-in-out infinite alternate}.r3{animation:rD 3s 1.2s ease-in-out infinite alternate}@keyframes rD{0%{opacity:0;transform:scale(0.5)}20%{opacity:1}100%{opacity:0.7;transform:scale(1)}}</style></defs><g filter="url(#fr)"><ellipse class="r3" cx="32" cy="32" rx="24" ry="18" stroke="white" stroke-width="0.5" fill="none" opacity="0.4"/><ellipse class="r2" cx="32" cy="32" rx="16" ry="12" stroke="white" stroke-width="0.65" fill="none" opacity="0.6"/><ellipse class="r1" cx="32" cy="32" rx="8" ry="6" stroke="white" stroke-width="0.8" fill="none"/><circle cx="32" cy="32" r="1.5" fill="white" opacity="0.8"/></g></svg>';
-var GRID_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fg" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="21" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter><style>.gl{stroke-dasharray:30;stroke-dashoffset:30}.g1{animation:gT 3s 0.00s ease-in-out infinite alternate}.g2{animation:gT 3s 0.15s ease-in-out infinite alternate}.g3{animation:gT 3s 0.30s ease-in-out infinite alternate}.g4{animation:gT 3s 0.45s ease-in-out infinite alternate}.g5{animation:gT 3s 0.60s ease-in-out infinite alternate}.g6{animation:gT 3s 0.75s ease-in-out infinite alternate}@keyframes gT{0%{stroke-dashoffset:30;opacity:0}30%{opacity:1}100%{stroke-dashoffset:0;opacity:0.85}}.sd{animation:dD 3s ease-in-out infinite alternate}.s1{animation-delay:0.8s}.s2{animation-delay:1.0s}.s3{animation-delay:1.2s}.s4{animation-delay:1.4s}.s5{animation-delay:1.6s}.s6{animation-delay:1.8s}.s7{animation-delay:2.0s}.s8{animation-delay:2.2s}.s9{animation-delay:2.4s}@keyframes dD{0%{opacity:0;transform:translate(3px,3px)}40%{opacity:0.9}100%{opacity:0.7;transform:translate(0,0)}}</style></defs><g filter="url(#fg)"><line class="gl g1" x1="8" y1="12" x2="28" y2="12" stroke="white" stroke-width="0.7"/><line class="gl g2" x1="8" y1="20" x2="28" y2="20" stroke="white" stroke-width="0.7"/><line class="gl g3" x1="8" y1="28" x2="24" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g4" x1="12" y1="8" x2="12" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g5" x1="20" y1="8" x2="20" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g6" x1="28" y1="8" x2="28" y2="24" stroke="white" stroke-width="0.7"/><circle class="sd s1" cx="38" cy="36" r="1.2" fill="white"/><circle class="sd s2" cx="46" cy="34" r="1.0" fill="white"/><circle class="sd s3" cx="54" cy="30" r="0.8" fill="white"/><circle class="sd s4" cx="36" cy="44" r="1.0" fill="white"/><circle class="sd s5" cx="44" cy="42" r="0.9" fill="white"/><circle class="sd s6" cx="52" cy="40" r="0.7" fill="white"/><circle class="sd s7" cx="42" cy="50" r="0.8" fill="white"/><circle class="sd s8" cx="50" cy="50" r="0.6" fill="white"/><circle class="sd s9" cx="56" cy="56" r="0.5" fill="white"/></g></svg>';
-var NETWORK_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><filter id="fn" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.2" xChannelSelector="R" yChannelSelector="G"/></filter><style>.n1{stroke-dasharray:60;stroke-dashoffset:60;animation:nD 3.5s ease-in-out infinite}.n2{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.28s ease-in-out infinite}.n3{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.56s ease-in-out infinite}.n4{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.84s ease-in-out infinite}.n5{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 1.12s ease-in-out infinite}.n6{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.4s ease-in-out infinite;opacity:0.6}.n7{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.55s ease-in-out infinite;opacity:0.6}.n8{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.7s ease-in-out infinite;opacity:0.6}.n9{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.85s ease-in-out infinite;opacity:0.6}.nd{animation:ndF 3.5s ease-in-out infinite}@keyframes nD{0%{stroke-dashoffset:60;opacity:0}12%{opacity:1}65%{stroke-dashoffset:0;opacity:1}82%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:60;opacity:0}}@keyframes ndF{0%{opacity:0}15%{opacity:1}70%{opacity:1}85%{opacity:0}100%{opacity:0}}</style></defs><g filter="url(#fn)"><path class="n1" d="M32,32 Q22,24 13,20" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n2" d="M32,32 Q42,25 51,22" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n3" d="M32,32 Q20,40 11,45" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n4" d="M32,32 Q44,40 53,45" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n5" d="M32,32 Q33,18 33,7" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n6" d="M13,20 Q9,26 7,31" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n7" d="M51,22 Q55,28 57,33" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n8" d="M11,45 Q6,48 4,54" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n9" d="M53,45 Q58,48 60,54" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><circle class="nd" cx="32" cy="32" r="2" fill="white"/><circle class="nd" cx="13" cy="20" r="1.4" fill="white" style="animation-delay:0.28s"/><circle class="nd" cx="51" cy="22" r="1.4" fill="white" style="animation-delay:0.56s"/><circle class="nd" cx="11" cy="45" r="1.2" fill="white" style="animation-delay:0.84s"/><circle class="nd" cx="53" cy="45" r="1.2" fill="white" style="animation-delay:1.12s"/><circle class="nd" cx="33" cy="7" r="1.2" fill="white" style="animation-delay:1.12s"/></g></svg>';
+var SPIRAL_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><style>.sp1{stroke-dasharray:'+SP_DASH+';stroke-dashoffset:'+SP_DASH+';animation:spD 4s ease-in-out infinite}.sp2{stroke-dasharray:'+SP_DASH+';stroke-dashoffset:'+SP_DASH+';animation:spD 4s 0.3s ease-in-out infinite;opacity:0.52}.sp3{stroke-dasharray:'+SP_DASH+';stroke-dashoffset:'+SP_DASH+';animation:spD 4s 0.6s ease-in-out infinite;opacity:0.25}@keyframes spD{0%{stroke-dashoffset:'+SP_DASH+';opacity:0}10%{opacity:1}62%{stroke-dashoffset:0;opacity:1}80%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:'+SP_DASH+';opacity:0}}</style></defs><g><path class="sp1" d="'+SP_D1+'" stroke="white" stroke-width="1.1" stroke-linecap="round" fill="none"/><path class="sp2" d="'+SP_D2+'" stroke="white" stroke-width="0.6" stroke-linecap="round" fill="none"/><path class="sp3" d="'+SP_D3+'" stroke="white" stroke-width="0.32" stroke-linecap="round" fill="none"/><circle cx="'+SP_CX+'" cy="'+SP_CY+'" r="1.3" fill="white" opacity="0.85"/></g></svg>';
+var ATTRACTOR_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><style>.ap1{stroke-dasharray:300;stroke-dashoffset:300;animation:aD 3s ease-in-out infinite alternate}.ap2{stroke-dasharray:200;stroke-dashoffset:200;animation:aD 3s 0.4s ease-in-out infinite alternate;opacity:0.5}.ap3{stroke-dasharray:160;stroke-dashoffset:160;animation:aD 3s 0.8s ease-in-out infinite alternate;opacity:0.3}@keyframes aD{0%{stroke-dashoffset:300;opacity:0}20%{opacity:1}100%{stroke-dashoffset:0}}</style></defs><g><path class="ap1" d="M32 32 C20 20,8 24,10 34 C12 44,26 44,32 32 C38 20,52 18,54 28 C56 38,44 46,32 32" stroke="white" stroke-width="1" stroke-linecap="round"/><path class="ap2" d="M32 32 C22 22,12 28,14 36 C16 44,28 42,32 32 C36 22,48 20,50 30 C52 40,40 46,32 32" stroke="white" stroke-width="0.6" stroke-linecap="round"/><path class="ap3" d="M32 32 C24 24,16 30,18 38 C20 44,30 42,32 32 C34 24,44 22,46 30 C48 38,38 44,32 32" stroke="white" stroke-width="0.4" stroke-linecap="round"/><circle cx="32" cy="32" r="1.2" fill="white" opacity="0.6"/></g></svg>';
+var RIPPLE_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><style>.r1{animation:rD 3s 0s ease-in-out infinite alternate}.r2{animation:rD 3s 0.6s ease-in-out infinite alternate}.r3{animation:rD 3s 1.2s ease-in-out infinite alternate}@keyframes rD{0%{opacity:0;transform:scale(0.5)}20%{opacity:1}100%{opacity:0.7;transform:scale(1)}}</style></defs><g><ellipse class="r3" cx="32" cy="32" rx="24" ry="18" stroke="white" stroke-width="0.5" fill="none" opacity="0.4"/><ellipse class="r2" cx="32" cy="32" rx="16" ry="12" stroke="white" stroke-width="0.65" fill="none" opacity="0.6"/><ellipse class="r1" cx="32" cy="32" rx="8" ry="6" stroke="white" stroke-width="0.8" fill="none"/><circle cx="32" cy="32" r="1.5" fill="white" opacity="0.8"/></g></svg>';
+var GRID_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><style>.gl{stroke-dasharray:30;stroke-dashoffset:30}.g1{animation:gT 3s 0.00s ease-in-out infinite alternate}.g2{animation:gT 3s 0.15s ease-in-out infinite alternate}.g3{animation:gT 3s 0.30s ease-in-out infinite alternate}.g4{animation:gT 3s 0.45s ease-in-out infinite alternate}.g5{animation:gT 3s 0.60s ease-in-out infinite alternate}.g6{animation:gT 3s 0.75s ease-in-out infinite alternate}@keyframes gT{0%{stroke-dashoffset:30;opacity:0}30%{opacity:1}100%{stroke-dashoffset:0;opacity:0.85}}.sd{animation:dD 3s ease-in-out infinite alternate}.s1{animation-delay:0.8s}.s2{animation-delay:1.0s}.s3{animation-delay:1.2s}.s4{animation-delay:1.4s}.s5{animation-delay:1.6s}.s6{animation-delay:1.8s}.s7{animation-delay:2.0s}.s8{animation-delay:2.2s}.s9{animation-delay:2.4s}@keyframes dD{0%{opacity:0;transform:translate(3px,3px)}40%{opacity:0.9}100%{opacity:0.7;transform:translate(0,0)}}</style></defs><g><line class="gl g1" x1="8" y1="12" x2="28" y2="12" stroke="white" stroke-width="0.7"/><line class="gl g2" x1="8" y1="20" x2="28" y2="20" stroke="white" stroke-width="0.7"/><line class="gl g3" x1="8" y1="28" x2="24" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g4" x1="12" y1="8" x2="12" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g5" x1="20" y1="8" x2="20" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g6" x1="28" y1="8" x2="28" y2="24" stroke="white" stroke-width="0.7"/><circle class="sd s1" cx="38" cy="36" r="1.2" fill="white"/><circle class="sd s2" cx="46" cy="34" r="1.0" fill="white"/><circle class="sd s3" cx="54" cy="30" r="0.8" fill="white"/><circle class="sd s4" cx="36" cy="44" r="1.0" fill="white"/><circle class="sd s5" cx="44" cy="42" r="0.9" fill="white"/><circle class="sd s6" cx="52" cy="40" r="0.7" fill="white"/><circle class="sd s7" cx="42" cy="50" r="0.8" fill="white"/><circle class="sd s8" cx="50" cy="50" r="0.6" fill="white"/><circle class="sd s9" cx="56" cy="56" r="0.5" fill="white"/></g></svg>';
+var NETWORK_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><style>.n1{stroke-dasharray:60;stroke-dashoffset:60;animation:nD 3.5s ease-in-out infinite}.n2{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.28s ease-in-out infinite}.n3{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.56s ease-in-out infinite}.n4{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.84s ease-in-out infinite}.n5{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 1.12s ease-in-out infinite}.n6{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.4s ease-in-out infinite;opacity:0.6}.n7{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.55s ease-in-out infinite;opacity:0.6}.n8{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.7s ease-in-out infinite;opacity:0.6}.n9{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.85s ease-in-out infinite;opacity:0.6}.nd{animation:ndF 3.5s ease-in-out infinite}@keyframes nD{0%{stroke-dashoffset:60;opacity:0}12%{opacity:1}65%{stroke-dashoffset:0;opacity:1}82%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:60;opacity:0}}@keyframes ndF{0%{opacity:0}15%{opacity:1}70%{opacity:1}85%{opacity:0}100%{opacity:0}}</style></defs><g><path class="n1" d="M32,32 Q22,24 13,20" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n2" d="M32,32 Q42,25 51,22" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n3" d="M32,32 Q20,40 11,45" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n4" d="M32,32 Q44,40 53,45" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n5" d="M32,32 Q33,18 33,7" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n6" d="M13,20 Q9,26 7,31" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n7" d="M51,22 Q55,28 57,33" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n8" d="M11,45 Q6,48 4,54" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n9" d="M53,45 Q58,48 60,54" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><circle class="nd" cx="32" cy="32" r="2" fill="white"/><circle class="nd" cx="13" cy="20" r="1.4" fill="white" style="animation-delay:0.28s"/><circle class="nd" cx="51" cy="22" r="1.4" fill="white" style="animation-delay:0.56s"/><circle class="nd" cx="11" cy="45" r="1.2" fill="white" style="animation-delay:0.84s"/><circle class="nd" cx="53" cy="45" r="1.2" fill="white" style="animation-delay:1.12s"/><circle class="nd" cx="33" cy="7" r="1.2" fill="white" style="animation-delay:1.12s"/></g></svg>';
 
 // ── Profile ──
-var DEFAULT_PROFILE={displacementScale:1.3,echoLayers:3,primaryStroke:1.1,animDuration:3,animStyle:{dashoffset:1,scale:0,translate:0},density:5,likedSubjects:[],dislikedSubjects:[],feedbackLog:[]};
+var DEFAULT_PROFILE={likedSubjects:[],dislikedSubjects:[],feedbackLog:[]};
 var profile=loadProfile();
-function loadProfile(){try{var s=localStorage.getItem('bes-icon-profile');return s?Object.assign({},DEFAULT_PROFILE,JSON.parse(s)):JSON.parse(JSON.stringify(DEFAULT_PROFILE));}catch(e){return JSON.parse(JSON.stringify(DEFAULT_PROFILE));}}
-function saveProfile(){try{localStorage.setItem('bes-icon-profile',JSON.stringify(profile));}catch(e){}}
-function resetProfile(){profile=JSON.parse(JSON.stringify(DEFAULT_PROFILE));saveProfile();renderMeter();}
+function loadProfile(){try{var s=localStorage.getItem('bes-icon-profile-v8');return s?Object.assign({},DEFAULT_PROFILE,JSON.parse(s)):JSON.parse(JSON.stringify(DEFAULT_PROFILE));}catch(e){return JSON.parse(JSON.stringify(DEFAULT_PROFILE));}}
+function saveProfile(){try{localStorage.setItem('bes-icon-profile-v8',JSON.stringify(profile));}catch(e){}}
+function resetProfile(){profile=JSON.parse(JSON.stringify(DEFAULT_PROFILE));saveProfile();render();}
 
-function parseSVGProfile(svg){
-  var dsm=svg.match(/scale="([\d.]+)"/),swm=svg.match(/stroke-width="([\d.]+)"/),adm=svg.match(/animation:\s*\w+\s+([\d.]+)s/);
-  var paths=(svg.match(/<(path|ellipse|line)[^>]*stroke/g)||[]).length;
-  var opacities=[];var re=/opacity[=:]["']?([\d.]+)/g,m;while((m=re.exec(svg))!==null){var v=parseFloat(m[1]);if(v<1&&v>0.1)opacities.push(v);}
-  return{displacementScale:dsm?parseFloat(dsm[1]):1.3,primaryStroke:swm?parseFloat(swm[1]):1.0,animDuration:adm?parseFloat(adm[1]):3,density:paths,echoLayers:Math.max(2,opacities.length),animStyle:{dashoffset:svg.includes('stroke-dashoffset')?1:0,scale:svg.includes('scale(')?1:0,translate:svg.includes('translate(')?1:0}};
-}
-function nudgeProfile(parsed,dir,subject){
-  var lr=dir===1?0.25:-0.15;
-  profile.displacementScale=Math.max(0.5,Math.min(2.5,profile.displacementScale+lr*(parsed.displacementScale-profile.displacementScale)*0.4));
-  profile.echoLayers=Math.max(1,Math.min(6,profile.echoLayers+lr*(parsed.echoLayers-profile.echoLayers)*0.4));
-  profile.primaryStroke=Math.max(0.4,Math.min(2.0,profile.primaryStroke+lr*(parsed.primaryStroke-profile.primaryStroke)*0.4));
-  profile.animDuration=Math.max(1.5,Math.min(6,profile.animDuration+lr*(parsed.animDuration-profile.animDuration)*0.4));
-  profile.density=Math.max(2,Math.min(12,profile.density+lr*(parsed.density-profile.density)*0.4));
-  Object.keys(profile.animStyle).forEach(function(k){profile.animStyle[k]=Math.max(0,Math.min(3,profile.animStyle[k]+lr*(parsed.animStyle[k]-profile.animStyle[k])*0.3));});
-  if(subject){if(dir===1){profile.likedSubjects=Array.from(new Set([subject].concat(profile.likedSubjects))).slice(0,8);profile.dislikedSubjects=profile.dislikedSubjects.filter(function(s){return s!==subject;});}else{profile.dislikedSubjects=Array.from(new Set([subject].concat(profile.dislikedSubjects))).slice(0,8);profile.likedSubjects=profile.likedSubjects.filter(function(s){return s!==subject;});}}
+function handleFeedback(id, dir) {
+  var icon = animatedIcons.find(function(i){return i.id==id;});
+  if(!icon) return;
+  if(dir===1){
+    profile.likedSubjects=Array.from(new Set([icon.prompt].concat(profile.likedSubjects))).slice(0,8);
+    profile.dislikedSubjects=profile.dislikedSubjects.filter(function(s){return s!==icon.prompt;});
+  } else {
+    profile.dislikedSubjects=Array.from(new Set([icon.prompt].concat(profile.dislikedSubjects))).slice(0,8);
+    profile.likedSubjects=profile.likedSubjects.filter(function(s){return s!==icon.prompt;});
+  }
   profile.feedbackLog=profile.feedbackLog.slice(-19).concat([{dir:dir,t:Date.now()}]);
+  feedbackMap[id]=dir;
   saveProfile();
-}
-function profileToDirective(){
-  var p=profile;
-  var animPref=Object.entries(p.animStyle).sort(function(a,b){return b[1]-a[1];})[0][0];
-  var lines=['LEARNT STYLE PREFERENCES:','- Displacement scale: '+p.displacementScale.toFixed(2),'- Echo layers: '+Math.round(p.echoLayers),'- Primary stroke: '+p.primaryStroke.toFixed(2),'- Animation duration: '+p.animDuration.toFixed(1)+'s','- Preferred animation style: '+animPref];
-  if(p.likedSubjects.length)lines.push('- Subjects that worked well: '+p.likedSubjects.join(', '));
-  if(p.dislikedSubjects.length)lines.push('- Subjects to avoid: '+p.dislikedSubjects.join(', '));
-  return lines.join('\n');
+  render();
 }
 
 // ── System prompts ──
-function buildSystemPromptGeometry(){
+function buildGeometrySystemPrompt() {
   return `You are a visual designer working for Butterfly Effect, a creative studio and social media agency built on the theory of chaos.
 
 BRAND THEORY:
 Everything is interconnected. Inspired by Chaos Theory, the studio recognises that in the ever-shifting world of digital marketing and social content, the tiniest shift can lead to monumental impact. A viral post, a trend sparked by a TikTok, or a brand's authentic collaboration with the right influencer can create waves of influence that reach far beyond the moment. Butterfly Effect harnesses this unpredictable beauty, crafting stories, campaigns, and content that may begin as an idea but has the potential to transform across platforms, communities, and cultures. We don't just create campaigns, we set movements in motion. Every small moment matters.
 
 VISUAL LANGUAGE:
-The brand logo is the butterfly icon, built from nested looping orbital paths, layered concentric curves that form wing shapes through repetition and overlap, not illustration. The aesthetic examples in the brand book show: a Lissajous figure with petal-like loops, a spirograph-type orbital pattern, and a Lorenz attractor, all rendered as thin white line drawings on dark backgrounds. The visual language is mathematical precision expressed as organic form. Structured systems that appear to breathe.
+The brand logo is the butterfly icon, built from nested looping orbital paths, layered concentric curves that form wing shapes through repetition and overlap, not illustration. The aesthetic examples in the brand book show a Lissajous figure with petal-like loops, a spirograph-type orbital pattern, and a Lorenz attractor, all rendered as thin white line drawings on dark backgrounds. The visual language is mathematical precision expressed as organic form. Structured systems that appear to breathe.
 
 AESTHETIC:
-Dark backgrounds. White strokes. No fills. Thin line weight matching the butterfly wordmark. Negative space is as important as the drawn elements. Precision with organic imperfection. The icons should feel like they were drawn by a steady hand that understands mathematics.
+Dark backgrounds. White strokes. No fills. Thin line weight. Negative space is as important as the drawn elements. Precision with organic imperfection. The icons should feel like they were drawn by a steady hand that understands mathematics.
 
-COLOUR: Black #000000, Pewter #afc1cb, Forest #506054, Deep Moss #161e1b, Earth #341c12, Rust #611e1f. Icons are white strokes on dark backgrounds.
-
-THE FIVE EXISTING ICONS AS REFERENCE FOR QUALITY AND APPROACH:
-1. Strange Attractor: the actual Lorenz attractor mathematical form. A figure-eight orbital path that loops back through its own centre. Thin looping lines forming the chaos theory shape the brand is named after. Directly mirrors the butterfly icon construction.
-2. Ripple Effect: concentric irregular rings expanding outward from a single point. Represents the small action, monumental impact brand philosophy.
-3. Network: minimal dots connected by curved lines suggesting interconnection and movement. Fits the everything is interconnected brand theory.
-4. Spiral: a single continuous curved line coiling outward. Echoes the looping structure of the butterfly icon.
-5. Fragmented Grid: a tight grid that dissolves into scattered points toward one corner. Represents chaos emerging from order, the literal brand positioning.
+THE FIVE EXISTING ICONS AS EXAMPLES OF QUALITY AND APPROACH:
+1. Strange Attractor: the actual Lorenz attractor mathematical form. A figure-eight orbital path that loops back through its own centre. Directly mirrors the butterfly icon construction.
+2. Ripple Effect: concentric irregular rings expanding outward from a single point. Represents small action, monumental impact.
+3. Network: minimal dots connected by curved lines suggesting interconnection and movement.
+4. Spiral: a single continuous curved line coiling outward from centre.
+5. Fragmented Grid: a tight grid that dissolves into scattered points toward one corner. Order becoming chaos.
 
 YOUR TASK:
-Given a subject, decide what its icon should look like within this visual language. Think about what the subject IS geometrically, what it DOES as a system or force, and how that maps to the chaos theory visual vocabulary of this brand. Describe the geometry in plain text only. Be specific: what shapes, what proportions, where they sit in a 64x64 space. No code, no SVG, no markdown. 4 to 6 sentences maximum.`;
+Given a subject, describe THREE distinct geometric approaches for an icon within this visual language. Each approach should interpret the subject differently. Think about what the subject IS geometrically and what it DOES as a system or force.
+
+For each approach write:
+APPROACH 1: [one sentence name]
+[3-4 sentences describing the specific geometry, what SVG elements to use, and exact proportions within a 64x64 space centred at 32,32]
+
+APPROACH 2: [one sentence name]
+[3-4 sentences]
+
+APPROACH 3: [one sentence name]
+[3-4 sentences]
+
+No code, no SVG, no markdown beyond this structure.`;
 }
 
-function buildSystemPromptRender(){
-  return `You are an SVG engineer. You will receive a geometry specification and your job is to build it as an animated SVG icon.
+function buildStaticRenderSystemPrompt() {
+  return `You are an SVG engineer building icons for Butterfly Effect, a studio whose visual language is mathematical precision expressed as organic form.
 
-CONSTRUCTION RULES - these apply to every icon without exception:
+CONSTRUCTION RULES:
 
-1. DISPLACEMENT FILTER: Every icon must have a fractalNoise displacement filter applied to the entire drawing group. Use this exact structure inside <defs>:
-<filter id="UNIQUEID" x="-15%" y="-15%" width="130%" height="130%">
-<feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="4" seed="RANDOMSEED" result="n"/>
-<feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/>
-</filter>
-Use a random seed between 1 and 99. Never use seed 9 or 7. Wrap all drawn elements in <g filter="url(#UNIQUEID)">.
+1. VIEWBOX: Always 64x64. Centre is 32,32. All coordinates must stay between 4 and 60. Maximum radius from centre is 26. Never place any point outside these bounds.
 
-2. STROKE RULES: White strokes only. No fills except one small anchor dot where it adds meaning. stroke-linecap="round" on every element. Stroke weights follow the geometry, primary elements 0.8 to 1.1, secondary 0.5 to 0.7, tertiary 0.3 to 0.45.
+2. STROKES: White strokes only. No fills except one small anchor dot (r 1.2 to 1.8, fill white, opacity 0.7-0.9) at the focal point. stroke-linecap="round" on every element. Stroke weights: primary 0.8-1.1, secondary 0.5-0.7, tertiary 0.3-0.45.
 
-3. ANIMATION TIED TO CONCEPT: The animation must reflect what the subject does, not a generic loop. Use these proven patterns as your guide:
-- A path that traces itself: stroke-dasharray and stroke-dashoffset draw-on reveal, then fade, then reset
-- Elements that expand outward: scale transform from 0.5 to 1.0 with opacity fade
-- Elements that sequence in: stagger the animation-delay across elements so they build one after another
-- Elements that pulse or breathe: opacity oscillation between 0.3 and 1.0
-Choose based on what the geometry does. Stagger timing across elements. All animations infinite.
+3. STATIC ONLY: No animation, no CSS keyframes. This is a static icon. Clean, precise geometry only.
 
-4. CSS IN DEFS: All animation styles go inside <defs><style></style></defs>. Use unique class name prefixes every icon to avoid conflicts. Never reuse class names fa, fr, fg, fn, fsp, ap, rD, gT, nD, sp.
+4. ELEMENTS: Use the right primitive for the geometry. Ellipses for rings and ovals. Lines for straight edges. Paths with cubic bezier curves for organic forms. Do not force curves onto straight geometry or straight lines onto curved geometry.
 
-5. UNIQUE IDS: Every filter id must be unique. Use a short random string prefix.
+5. OPACITY LAYERING: Where the geometry has multiple echo elements, apply opacity 1.0 to primary, 0.5 to secondary, 0.3 to tertiary. This creates depth without colour.
 
-6. ANCHOR DOT: Add a small filled white circle (r="1.2" to r="1.8") at the origin point or focal point of the geometry where it makes sense. opacity 0.7 to 0.9.
-
-${profileToDirective()}
-
-OUTPUT RULES:
-- Output ONLY raw SVG. No markdown, no backticks, no explanation, no comments.
-- Opening tag exactly: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64">
-- Close with </svg>
-- Complete and valid SVG only. Never truncate.`;
+OUTPUT: Raw SVG only. No markdown, no backticks, no explanation.
+Opening tag exactly: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64">
+Close with </svg>
+Complete valid SVG. Never truncate.`;
 }
 
-function buildGeometryPrompt(subject){
-  return `Subject: ${subject}\n\nDescribe the geometry for an animated icon of this subject within the Butterfly Effect visual language. What is its most honest geometric form? What does it do as a system or force? How does it fit the chaos theory vocabulary of this brand? Be specific about shapes and proportions within a 64x64 space. Plain text only, no code.`;
-}
+function buildAnimateSystemPrompt() {
+  return `You are an SVG animation artist. You will receive a static SVG icon and a subject. Your job is to animate the existing geometry in a way that reflects what the subject does.
 
-function buildRenderPrompt(subject){
-  return `Subject: ${subject}\n\nGeometry specification:\n{{GEOMETRY}}\n\nBuild this as an animated SVG icon following all construction rules. The animation must reflect what this subject does. Output the complete SVG and nothing else.`;
+ANIMATION PRINCIPLES:
+- The animation must be tied to the concept. A ripple expands. A spiral unwinds. A network builds connection by connection. A flame flickers. An orbit rotates. Choose the motion that is true to the subject.
+- Do not invent new geometry. Animate exactly what is already there.
+- All animations are CSS keyframes inside a <style> block inside <defs>.
+- All animations infinite.
+- Use unique class name prefixes to avoid conflicts.
+
+PROVEN ANIMATION PATTERNS:
+- Path that traces itself: add stroke-dasharray equal to path length, stroke-dashoffset animates from full length to 0, then fades and resets. Good for: attractors, spirals, outlines, orbits.
+- Elements that expand outward: CSS transform scale from 0.6 to 1.0 with opacity fade in and out. Good for: ripples, pulses, shockwaves.
+- Elements that sequence in one by one: stagger animation-delay across sibling elements so they build sequentially. Good for: networks, grids, constellations.
+- Continuous rotation: CSS rotate transform on the group. Good for: orbits, wheels, vortex.
+- Opacity breathing: opacity oscillates between 0.2 and 1.0 with ease-in-out. Good for: signals, pulses, glows.
+- Float or drift: subtle translate animation, 2-3px movement. Good for: particles, dust, scatter.
+
+STAGGER TIMING: Always stagger delays across elements. Never animate everything simultaneously.
+
+OUTPUT: Return the complete SVG with animation added. Raw SVG only. No markdown, no backticks, no explanation. Never truncate.`;
 }
 
 // ── GIF encoder ──
@@ -157,23 +156,6 @@ function encodeGIF(frames,w,h,delay){
   });
   bytes.push(0x3b);
   return new Uint8Array(bytes);
-}
-
-async function captureCanvasGIF(sourceCanvas,name,variant){
-  var size=128,fps=20,duration=4,totalFrames=fps*duration;
-  var bgColor=variant==='white-black'?'#0a0a0a':variant==='black-white'?'#ffffff':null;
-  var invert=variant==='black-transparent'||variant==='black-white';
-  var canvases=[];
-  for(var i=0;i<totalFrames;i++){
-    await new Promise(function(r){setTimeout(r,1000/fps);});
-    var cv=document.createElement('canvas');cv.width=size;cv.height=size;
-    var ctx=cv.getContext('2d');
-    if(bgColor){ctx.fillStyle=bgColor;ctx.fillRect(0,0,size,size);}
-    if(invert){var tmp=document.createElement('canvas');tmp.width=size;tmp.height=size;var tc=tmp.getContext('2d');tc.drawImage(sourceCanvas,0,0,size,size);var id=tc.getImageData(0,0,size,size);for(var j=0;j<id.data.length;j+=4){id.data[j]=255-id.data[j];id.data[j+1]=255-id.data[j+1];id.data[j+2]=255-id.data[j+2];}tc.putImageData(id,0,0);ctx.drawImage(tmp,0,0,size,size);}
-    else ctx.drawImage(sourceCanvas,0,0,size,size);
-    canvases.push(cv);
-  }
-  triggerGIFDownload(encodeGIF(canvases,size,size,Math.round(100/fps)),name+'-'+variant+'.gif');
 }
 
 async function captureSVGGIF(svgString,name,variant){
@@ -205,7 +187,6 @@ function triggerGIFDownload(gif,filename){
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([gif],{type:'image/gif'}));a.download=filename;a.click();
 }
 
-// ── Export helpers ──
 function applyVariant(s,variant){
   var inv=variant==='black-transparent'||variant==='black-white';
   if(inv){s=s.replace(/stroke="white"/g,'stroke="black"').replace(/fill="white"/g,'fill="black"').replace(/rgba\(255,255,255,/g,'rgba(0,0,0,');}
@@ -221,10 +202,10 @@ function downloadPNGfromSVG(svgString,name,variant,size){
 }
 function copySVG(svg){
   try{var ta=document.createElement('textarea');ta.value=svg;ta.style.cssText='position:fixed;left:-9999px;top:-9999px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);return true;}
-  catch(e){var url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));window.open(url,'_blank');return false;}
+  catch(e){return false;}
 }
 
-// ── Canvas spiral animation ──
+// ── Canvas spiral ──
 var TURNS=3.5,STEPS=320;
 function bakeWobble(amp){var wx=[],wy=[];for(var i=0;i<=STEPS;i++){var t=i/STEPS;wx.push((Math.random()-0.5)*amp+Math.sin(t*11.3+Math.random()*0.4)*amp*0.5+(Math.random()-0.5)*amp*0.3);wy.push((Math.random()-0.5)*amp*0.65+Math.sin(t*9.7+Math.random()*0.4)*amp*0.35+(Math.random()-0.5)*amp*0.2);}return{wx:wx,wy:wy};}
 function makeSpiralLayers(){var w1=bakeWobble(1.3),w2=bakeWobble(1.0),w3=bakeWobble(0.7);return[{opacity:0.92,lw:1.1,lag:0,wx:w1.wx,wy:w1.wy},{opacity:0.48,lw:0.6,lag:0.06,wx:w2.wx,wy:w2.wy},{opacity:0.22,lw:0.32,lag:0.12,wx:w3.wx,wy:w3.wy}];}
@@ -264,52 +245,19 @@ function runSpiral(canvas){
 }
 
 // ── State ──
-var icons=[];
-var loading=false;
-var gifLoadingIds={};
-var mode='random';
+var currentSubject='';
+var geometryText='';
+var staticOptions=[];
+var selectedOptionIndex=-1;
+var animatingIndex=-1;
+var animatedIcons=[];
 var feedbackMap={};
 var svgStore={};
+var mode='random';
+var loadingGeometry=false;
+var loadingOptions=[];
+var loadingAnimate=false;
 
-var SUBJECT_POOL=["wave","tornado","whirlpool","lightning bolt","ripple","current","vortex","gust of wind","updraft","aurora","solar system","black hole","comet","nebula","orbit","eclipse","pulsar","galaxy spiral","shooting star","event horizon","leaf","fern","coral","seed pod","vine","petal","root system","lotus","moss","spore","flame","smoke","snowflake","ice crystal","steam","ember","frost","raindrop","bubble","tide","infinity loop","spiral","spider web","compass rose","labyrinth","fractal","helix","interference pattern","signal wave","feedback loop","jellyfish","snake","butterfly","bird in flight","dragonfly","firefly","moth","nautilus","sea anemone","manta ray","eye","feather","hourglass","prism","thread","signal burst","chain","rippling membrane","echo"];
-var THEMES=["butterfly","cocoon","metamorphosis","emergence","signal","chaos","threshold","cascade","entanglement"];
-var VARIANTS=[{id:"white-transparent",label:"White / Transparent"},{id:"white-black",label:"White / Black bg"},{id:"black-transparent",label:"Black / Transparent"},{id:"black-white",label:"Black / White bg"}];
-
-function pickRandom(arr){return arr[Math.floor(Math.random()*arr.length)];}
-function extractSVG(r){r=r.replace(/^```[\w]*\n?/gm,'').replace(/\n?```$/gm,'').trim();var m=r.match(/<svg[\s\S]*<\/svg>/i);return m?m[0]:r;}
-
-async function generate(subject){
-  if(loading)return;
-  loading=true;showError('');render();
-  try{
-    var s=subject||pickRandom(SUBJECT_POOL);
-    var res=await fetch('/api/generate',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        subject:s,
-        systemPromptGeometry:buildSystemPromptGeometry(),
-        systemPromptRender:buildSystemPromptRender(),
-        geometryPrompt:buildGeometryPrompt(s),
-        renderPrompt:buildRenderPrompt(s)
-      })
-    });
-    var data=await res.json();
-    if(data.error)throw new Error(data.error);
-    var svg=extractSVG(data.text||'');
-    if(!svg.includes('<svg'))throw new Error('No SVG in response.');
-    var icon={prompt:s,svg:svg,id:Date.now()+Math.random()};
-    storeSVG(icon.id,icon.svg);
-    icons.unshift(icon);
-    if(icons.length>32)icons=icons.slice(0,32);
-  }catch(e){showError(e.message||'Generation failed.');}
-  loading=false;render();
-}
-
-function storeSVG(id,svg){svgStore[id]=svg;}
-function showError(msg){var el=document.getElementById('error-msg');if(el)el.textContent=msg;}
-
-// ── Export dropdowns ──
 var openDropdownId=null;
 document.addEventListener('mousedown',function(e){
   if(openDropdownId&&!e.target.closest('[data-dropdown="'+openDropdownId+'"]')){
@@ -327,79 +275,163 @@ function toggleDropdown(id){
   openDropdownId=isOpen?null:id;
 }
 
-function makeExportDropdown(id,name,isCanvas){
-  var gifBusy=!!gifLoadingIds[id];
-  var vShort=['W/Transp','W/Black','B/Transp','B/White'];
-  var html='<div data-dropdown="'+id+'" style="position:relative;width:100%;">';
-  html+='<button onclick="toggleDropdown(\''+id+'\')" style="width:100%;padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Export ▾</button>';
-  html+='<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#0e0e0e;border:1px solid #2a2a2a;z-index:100;padding:10px 10px 8px;min-width:220px;">';
-  html+='<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #222;">';
-  html+='<div></div>';
-  vShort.forEach(function(v){html+='<div style="font-size:6px;letter-spacing:0.8px;text-transform:uppercase;color:#fff;opacity:0.5;text-align:center;line-height:1.3;">'+v+'</div>';});
-  html+='</div>';
-  html+='<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;margin-bottom:4px;align-items:center;">';
-  html+='<div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.9;">PNG</div>';
-  VARIANTS.forEach(function(v){html+='<button onclick="downloadPNG(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">↓</button>';});
-  html+='</div>';
-  html+='<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;margin-bottom:4px;align-items:center;">';
-  html+='<div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:'+(isCanvas?0.2:0.9)+';">SVG</div>';
-  VARIANTS.forEach(function(v){
-    if(!isCanvas){html+='<button onclick="downloadSVGById(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">↓</button>';}
-    else{html+='<button disabled style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;border:1px solid #1a1a1a;color:#fff;background:#0f0f0f;opacity:0.1;cursor:not-allowed;">–</button>';}
+var SUBJECT_POOL=["wave","tornado","whirlpool","lightning bolt","ripple","current","vortex","gust of wind","updraft","aurora","solar system","black hole","comet","nebula","orbit","eclipse","pulsar","galaxy spiral","shooting star","event horizon","leaf","fern","coral","seed pod","vine","petal","root system","lotus","moss","spore","flame","smoke","snowflake","ice crystal","steam","ember","frost","raindrop","bubble","tide","infinity loop","spiral","spider web","compass rose","labyrinth","fractal","helix","interference pattern","signal wave","feedback loop","jellyfish","nautilus","butterfly","bird in flight","dragonfly","firefly","moth","sea anemone","eye","feather","hourglass","prism","thread","signal burst","chain","echo"];
+var THEMES=["butterfly","cocoon","metamorphosis","emergence","signal","chaos","threshold","cascade","entanglement"];
+var VARIANTS=[{id:"white-transparent",label:"White / Transparent"},{id:"white-black",label:"White / Black bg"},{id:"black-transparent",label:"Black / Transparent"},{id:"black-white",label:"Black / White bg"}];
+
+function pickRandom(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function extractSVG(r){r=r.replace(/^```[\w]*\n?/gm,'').replace(/\n?```$/gm,'').trim();var m=r.match(/<svg[\s\S]*<\/svg>/i);return m?m[0]:r;}
+function storeSVG(id,svg){svgStore[id]=svg;}
+function showError(msg){var el=document.getElementById('error-msg');if(el)el.textContent=msg;}
+
+async function apiCall(endpoint, body) {
+  var res = await fetch(endpoint, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)
   });
-  html+='</div>';
-  html+='<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;align-items:center;">';
-  html+='<div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:'+(gifBusy?0.4:0.9)+';">GIF</div>';
-  VARIANTS.forEach(function(v){html+='<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\''+v.id+'\',\''+name+'\','+isCanvas+');toggleDropdown(\''+id+'\')" style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:'+(gifBusy?'not-allowed':'pointer')+';border:1px solid #2a2a2a;color:#fff;background:#161616;opacity:'+(gifBusy?0.25:1)+';">'+(gifBusy?'...':'↓')+'</button>';});
-  html+='</div>';
-  html+='</div></div>';
+  var data = await res.json();
+  if(data.error) throw new Error(data.error);
+  return data;
+}
+
+async function generateOptions(subject) {
+  if(loadingGeometry) return;
+  currentSubject = subject || pickRandom(SUBJECT_POOL);
+  staticOptions = [];
+  selectedOptionIndex = -1;
+  geometryText = '';
+  loadingGeometry = true;
+  loadingOptions = [];
+  showError('');
+  render();
+
+  try {
+    // Call 1: geometry (Groq)
+    var geoData = await apiCall('/api/geometry', {
+      systemPrompt: buildGeometrySystemPrompt(),
+      prompt: 'Subject: ' + currentSubject + '\n\nDescribe three distinct geometric approaches for an icon of this subject within the Butterfly Effect visual language.'
+    });
+    geometryText = geoData.text;
+    loadingGeometry = false;
+
+    // Parse the three approaches
+    var approaches = parseApproaches(geometryText);
+
+    // Call 2-4: render each approach (Anthropic) sequentially
+    for(var i = 0; i < Math.min(3, approaches.length); i++) {
+      loadingOptions.push(i);
+      render();
+      try {
+        var renderData = await apiCall('/api/render', {
+          systemPrompt: buildStaticRenderSystemPrompt(),
+          prompt: 'Subject: ' + currentSubject + '\n\nGeometry to build:\n' + approaches[i] + '\n\nBuild this as a static SVG icon. Output SVG only.'
+        });
+        var svg = extractSVG(renderData.text || '');
+        if(svg.includes('<svg')) {
+          staticOptions.push({ svg: svg, approach: approaches[i], index: i });
+        }
+      } catch(e) {
+        console.error('Render error for approach ' + i, e.message);
+      }
+      loadingOptions = loadingOptions.filter(function(x){return x!==i;});
+      render();
+    }
+  } catch(e) {
+    showError(e.message || 'Generation failed.');
+    loadingGeometry = false;
+  }
+  render();
+}
+
+function parseApproaches(text) {
+  var approaches = [];
+  var parts = text.split(/APPROACH\s+\d+:/i);
+  for(var i = 1; i < parts.length; i++) {
+    var trimmed = parts[i].trim();
+    if(trimmed.length > 20) approaches.push(trimmed);
+  }
+  // fallback: if parsing fails, use full text as one approach
+  if(approaches.length === 0) approaches.push(text);
+  return approaches;
+}
+
+function selectOption(index) {
+  selectedOptionIndex = index;
+  render();
+}
+
+async function animateSelected() {
+  if(selectedOptionIndex < 0 || !staticOptions[selectedOptionIndex]) return;
+  var selected = staticOptions[selectedOptionIndex];
+  loadingAnimate = true;
+  showError('');
+  render();
+
+  try {
+    var animData = await apiCall('/api/animate', {
+      systemPrompt: buildAnimateSystemPrompt(),
+      prompt: 'Subject: ' + currentSubject + '\n\nAnimate this SVG icon. The animation must reflect what "' + currentSubject + '" does. Return the complete animated SVG.\n\n' + selected.svg
+    });
+    var svg = extractSVG(animData.text || '');
+    if(!svg.includes('<svg')) throw new Error('No SVG in response.');
+    var icon = { prompt: currentSubject, svg: svg, id: Date.now() + Math.random() };
+    storeSVG(icon.id, icon.svg);
+    animatedIcons.unshift(icon);
+    if(animatedIcons.length > 32) animatedIcons = animatedIcons.slice(0, 32);
+    // reset options after successful animation
+    staticOptions = [];
+    selectedOptionIndex = -1;
+    currentSubject = '';
+  } catch(e) {
+    showError(e.message || 'Animation failed.');
+  }
+  loadingAnimate = false;
+  render();
+}
+
+function makeExportDropdown(id, name) {
+  var gifBusy = !!svgStore['gif-'+id];
+  var vShort = ['W/Transp','W/Black','B/Transp','B/White'];
+  var html = '<div data-dropdown="'+id+'" style="position:relative;width:100%;">';
+  html += '<button onclick="toggleDropdown(\''+id+'\')" style="width:100%;padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Export ▾</button>';
+  html += '<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#0e0e0e;border:1px solid #2a2a2a;z-index:100;padding:10px 10px 8px;min-width:220px;">';
+  html += '<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #222;"><div></div>';
+  vShort.forEach(function(v){html+='<div style="font-size:6px;letter-spacing:0.8px;text-transform:uppercase;color:#fff;opacity:0.5;text-align:center;line-height:1.3;">'+v+'</div>';});
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;margin-bottom:4px;align-items:center;">';
+  html += '<div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.9;">PNG</div>';
+  VARIANTS.forEach(function(v){html+='<button onclick="downloadPNG(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">↓</button>';});
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;margin-bottom:4px;align-items:center;">';
+  html += '<div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.9;">SVG</div>';
+  VARIANTS.forEach(function(v){html+='<button onclick="downloadSVGById(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">↓</button>';});
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;align-items:center;">';
+  html += '<div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:'+(gifBusy?0.4:0.9)+';">GIF</div>';
+  VARIANTS.forEach(function(v){html+='<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\''+v.id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:'+(gifBusy?'not-allowed':'pointer')+';border:1px solid #2a2a2a;color:#fff;background:#161616;opacity:'+(gifBusy?0.25:1)+';">'+(gifBusy?'...':'↓')+'</button>';});
+  html += '</div></div></div>';
   return html;
 }
 
 function downloadPNG(variant,id,name){var svg=svgStore[id];if(svg)downloadPNGfromSVG(svg,name,variant);}
 function downloadSVGById(variant,id,name){var svg=svgStore[id];if(svg)downloadSVG(svg,name,variant);}
-
-async function handleGIFExport(id,variant,name,isCanvas){
-  gifLoadingIds[id]=true;render();
-  try{
-    if(isCanvas){var canvas=document.getElementById('canvas-'+id);if(canvas)await captureCanvasGIF(canvas,name,variant);}
-    else{var svg=svgStore[id];if(svg)await captureSVGGIF(svg,name,variant);}
-  }catch(e){console.error(e);}
-  delete gifLoadingIds[id];render();
+async function handleGIFExport(id,variant,name){
+  svgStore['gif-'+id]=true;render();
+  try{var svg=svgStore[id];if(svg)await captureSVGGIF(svg,name,variant);}catch(e){console.error(e);}
+  delete svgStore['gif-'+id];render();
 }
-
 function handleCopy(id){
   var svg=svgStore[id];if(!svg)return;
   var ok=copySVG(svg);
   if(ok){var btn=document.getElementById('copy-btn-'+id);if(btn){btn.textContent='Copied';setTimeout(function(){btn.textContent='Copy SVG';},2000);}}
 }
 
-function handleFeedback(id,dir){
-  var icon=icons.find(function(i){return i.id==id;});
-  if(!icon)return;
-  nudgeProfile(parseSVGProfile(icon.svg),dir,icon.prompt);
-  feedbackMap[id]=dir;render();
-}
-
-// ── Render meter ──
-function renderMeter(){
-  var el=document.getElementById('feedback-meter');if(!el)return;
-  var log=profile.feedbackLog||[];
-  if(log.length===0){el.style.display='none';return;}
-  el.style.display='flex';
-  var likeCount=log.filter(function(l){return l.dir===1;}).length;
-  var recent=log.slice(-10);
-  var sparkHtml=recent.map(function(l){return '<div style="width:4px;height:'+(l.dir===1?10:5)+'px;background:'+(l.dir===1?'rgba(80,160,100,0.8)':'rgba(160,60,60,0.7)')+';border-radius:1px;"></div>';}).join('');
-  for(var i=recent.length;i<10;i++)sparkHtml+='<div style="width:4px;height:2px;background:rgba(255,255,255,0.07);border-radius:1px;"></div>';
-  var subjectsHtml='';
-  if(profile.likedSubjects.length>0)subjectsHtml+='<div style="font-size:6px;letter-spacing:1px;color:rgba(80,160,100,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">+'+profile.likedSubjects.slice(0,3).join(', ')+'</div>';
-  if(profile.dislikedSubjects.length>0)subjectsHtml+='<div style="font-size:6px;letter-spacing:1px;color:rgba(160,60,60,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">-'+profile.dislikedSubjects.slice(0,3).join(', ')+'</div>';
-  el.innerHTML='<div style="display:flex;flex-direction:column;gap:3px;"><span style="font-size:6px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.25;">Feedback log</span><div style="display:flex;gap:1.5px;align-items:center;height:14px;">'+sparkHtml+'</div><span style="font-size:6px;letter-spacing:1px;opacity:0.3;">'+likeCount+' of '+log.length+'</span></div>'+(subjectsHtml?'<div style="width:1px;height:28px;background:#222;"></div><div style="display:flex;flex-direction:column;gap:3px;">'+subjectsHtml+'</div>':'')+'<div style="margin-left:auto;"><button onclick="resetProfile()" style="font-family:Arial,sans-serif;font-size:6px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;padding:3px 7px;opacity:0.3;">Reset</button></div>';
-}
-
 // ── Main render ──
 function render(){
   var app=document.getElementById('app');
+
+  // Reference strip
   var refItems=[
     {key:'attr',label:'Attractor',svg:ATTRACTOR_SVG},
     {key:'ripl',label:'Ripple',svg:RIPPLE_SVG},
@@ -412,40 +444,87 @@ function render(){
     refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
     refCardsHtml+='<div style="width:48px;height:48px;">'+item.svg.replace('width="64" height="64"','width="48" height="48"')+'</div>';
     refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">'+item.label+'</span>';
-    refCardsHtml+=makeExportDropdown(item.key,item.label.toLowerCase(),false);
+    refCardsHtml+=makeExportDropdown(item.key,item.label.toLowerCase());
     refCardsHtml+='</div>';
   });
   refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
   refCardsHtml+='<canvas id="canvas-spiral-ref" width="72" height="72" style="width:48px;height:48px;"></canvas>';
   refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">Spiral</span>';
-  refCardsHtml+=makeExportDropdown('spiral-ref','spiral',true);
   refCardsHtml+='</div>';
 
+  // Mode tabs
   var modeBtns='<div style="display:flex;margin-bottom:20px;max-width:480px;">';
   modeBtns+='<button onclick="setMode(\'random\')" style="flex:1;padding:11px 0;font-family:Arial,sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:1px solid '+(mode==='random'?'#341C12':'#222')+';border-right:none;color:#fff;background:'+(mode==='random'?'#1a0e09':'#111')+';">Random</button>';
   modeBtns+='<button onclick="setMode(\'custom\')" style="flex:1;padding:11px 0;font-family:Arial,sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:1px solid '+(mode==='custom'?'#341C12':'#222')+';color:#fff;background:'+(mode==='custom'?'#1a0e09':'#111')+';">Custom</button>';
   modeBtns+='</div>';
 
-  var controlsHtml='';
-  if(mode==='random'){
-    controlsHtml='<div style="max-width:480px;margin-bottom:36px;display:flex;flex-direction:column;gap:10px;">';
-    controlsHtml+='<button onclick="generate()" '+(loading?'disabled':'')+' style="width:100%;padding:15px 0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:'+(loading?'not-allowed':'pointer')+';border:1px solid #341C12;color:'+(loading?'#444':'#fff')+';background:#1a0e09;opacity:'+(loading?0.5:1)+';">'+(loading?'Generating...':'Generate')+'</button>';
+  var isGenerating = loadingGeometry || loadingOptions.length > 0;
+
+  // Controls
+  var controlsHtml='<div style="max-width:480px;margin-bottom:36px;display:flex;flex-direction:column;gap:10px;">';
+  if(mode==='custom'){
+    controlsHtml+='<input id="custom-input" placeholder="Describe an icon..." onkeydown="if(event.key===\'Enter\'){var v=this.value.trim();if(v)generateOptions(v);}" style="background:#111;border:1px solid #222;color:#fff;padding:12px 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1px;outline:none;width:100%;"/>';
+    controlsHtml+='<button onclick="var v=document.getElementById(\'custom-input\').value.trim();if(v)generateOptions(v);" '+(isGenerating?'disabled':'')+' style="padding:12px 0;width:100%;font-family:Arial,sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:'+(isGenerating?'not-allowed':'pointer')+';border:1px solid #341C12;color:'+(isGenerating?'#444':'#fff')+';background:#1a0e09;opacity:'+(isGenerating?0.5:1)+';">'+(isGenerating?'Generating...':'Generate')+'</button>';
+  } else {
+    controlsHtml+='<button onclick="generateOptions()" '+(isGenerating?'disabled':'')+' style="width:100%;padding:15px 0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:'+(isGenerating?'not-allowed':'pointer')+';border:1px solid #341C12;color:'+(isGenerating?'#444':'#fff')+';background:#1a0e09;opacity:'+(isGenerating?0.5:1)+';">'+(isGenerating?'Generating...':'Generate')+'</button>';
     controlsHtml+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">';
-    THEMES.forEach(function(t){controlsHtml+='<button onclick="generate(\''+t+'\')" '+(loading?'disabled':'')+' style="padding:9px 12px;font-family:Arial,sans-serif;font-size:8px;letter-spacing:1.4px;text-transform:uppercase;cursor:'+(loading?'not-allowed':'pointer')+';border:1px solid #222;color:#fff;background:#111;text-align:center;">'+t+'</button>';});
-    controlsHtml+='</div></div>';
-  }else{
-    controlsHtml='<div style="max-width:480px;margin-bottom:36px;display:flex;flex-direction:column;gap:10px;">';
-    controlsHtml+='<input id="custom-input" placeholder="Describe an icon..." onkeydown="if(event.key===\'Enter\'){var v=this.value.trim();if(v)generate(v);}" style="background:#111;border:1px solid #222;color:#fff;padding:12px 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1px;outline:none;width:100%;"/>';
-    controlsHtml+='<button onclick="var v=document.getElementById(\'custom-input\').value.trim();if(v)generate(v);" '+(loading?'disabled':'')+' style="padding:12px 0;width:100%;font-family:Arial,sans-serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:'+(loading?'not-allowed':'pointer')+';border:1px solid #341C12;color:'+(loading?'#444':'#fff')+';background:#1a0e09;opacity:'+(loading?0.5:1)+';">'+(loading?'Generating...':'Generate')+'</button>';
+    THEMES.forEach(function(t){controlsHtml+='<button onclick="generateOptions(\''+t+'\')" '+(isGenerating?'disabled':'')+' style="padding:9px 12px;font-family:Arial,sans-serif;font-size:8px;letter-spacing:1.4px;text-transform:uppercase;cursor:'+(isGenerating?'not-allowed':'pointer')+';border:1px solid #222;color:#fff;background:#111;text-align:center;">'+t+'</button>';});
     controlsHtml+='</div>';
   }
+  controlsHtml+='</div>';
 
+  // Loading state
+  var loadingHtml='';
+  if(loadingGeometry){
+    loadingHtml='<div style="max-width:480px;margin-bottom:24px;padding:16px;background:#111;border:1px solid #1e1e1e;">';
+    loadingHtml+='<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.4;">Designing geometry...</p>';
+    loadingHtml+='</div>';
+  }
+
+  // Static options
+  var optionsHtml='';
+  if(staticOptions.length > 0 || loadingOptions.length > 0){
+    optionsHtml+='<div style="margin-bottom:8px;">';
+    if(currentSubject) optionsHtml+='<p style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.3;margin-bottom:16px;">'+currentSubject+' — choose a direction</p>';
+    optionsHtml+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:560px;margin-bottom:20px;">';
+
+    // Show rendered options
+    staticOptions.forEach(function(opt){
+      var isSelected = selectedOptionIndex === opt.index;
+      optionsHtml+='<div onclick="selectOption('+opt.index+')" style="background:#111;border:1px solid '+(isSelected?'#341C12':'#1e1e1e')+';padding:24px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.2s;">';
+      optionsHtml+='<div style="width:64px;height:64px;">'+opt.svg+'</div>';
+      optionsHtml+='<div style="width:8px;height:8px;border-radius:50%;background:'+(isSelected?'#341C12':'#222')+';border:1px solid '+(isSelected?'#341C12':'#333')+';"></div>';
+      optionsHtml+='</div>';
+    });
+
+    // Show loading placeholders for options still generating
+    loadingOptions.forEach(function(){
+      optionsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:24px 16px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:120px;">';
+      optionsHtml+='<p style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.2;">Rendering...</p>';
+      optionsHtml+='</div>';
+    });
+
+    optionsHtml+='</div>';
+
+    // Animate button
+    if(selectedOptionIndex >= 0 && !loadingAnimate){
+      optionsHtml+='<button onclick="animateSelected()" style="padding:14px 48px;font-family:Arial,sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:1px solid #341C12;color:#fff;background:#1a0e09;">Animate Selected</button>';
+    }
+    if(loadingAnimate){
+      optionsHtml+='<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.4;">Animating...</p>';
+    }
+    optionsHtml+='</div>';
+  }
+
+  // Animated icons grid
   var gridHtml='';
-  if(icons.length>0){
-    gridHtml='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-width:900px;">';
-    icons.forEach(function(icon){
+  if(animatedIcons.length > 0){
+    if(staticOptions.length === 0 && !isGenerating) gridHtml+='<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.15;margin-bottom:16px;">Generated</p>';
+    gridHtml+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-width:900px;">';
+    animatedIcons.forEach(function(icon){
       var fb=feedbackMap[icon.id];
       var border=fb===1?'#2E5038':fb===-1?'#3a1a1a':'#1e1e1e';
+      storeSVG(icon.id,icon.svg);
       gridHtml+='<div style="background:#111;border:1px solid '+border+';display:flex;flex-direction:column;align-items:center;padding:28px 16px 16px;gap:10px;">';
       gridHtml+='<div style="width:64px;height:64px;">'+icon.svg+'</div>';
       gridHtml+='<p style="font-size:8px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.3;text-align:center;margin:0;">'+icon.prompt+'</p>';
@@ -454,25 +533,23 @@ function render(){
       gridHtml+='<button onclick="handleFeedback('+icon.id+',-1)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===-1?'#2a1010':'#0f0f0f')+';">✕</button>';
       gridHtml+='</div>';
       gridHtml+='<button id="copy-btn-'+icon.id+'" onclick="handleCopy('+icon.id+')" style="padding:6px 0;width:100%;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#151515;">Copy SVG</button>';
-      gridHtml+=makeExportDropdown(icon.id,icon.prompt,false);
+      gridHtml+=makeExportDropdown(icon.id,icon.prompt);
       gridHtml+='</div>';
     });
     gridHtml+='</div>';
-  }else if(!loading){
+  } else if(!isGenerating && staticOptions.length === 0) {
     gridHtml='<p style="opacity:0.06;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-top:8px;">Press generate.</p>';
   }
 
   app.innerHTML=
     '<p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.4;margin:0 0 4px;">Butterfly Effect</p>'+
     '<p style="font-size:10px;letter-spacing:1px;opacity:0.2;margin:0 0 28px;">Icon Generator — V8.0</p>'+
-    '<div id="feedback-meter" style="display:none;align-items:center;gap:12px;margin-bottom:20px;padding:10px 14px;background:#0e0e0e;border:1px solid #1a1a1a;flex-wrap:wrap;"></div>'+
     '<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.2;margin-bottom:10px;">Reference Set</p>'+
     '<div style="display:flex;gap:10px;margin-bottom:36px;flex-wrap:wrap;">'+refCardsHtml+'</div>'+
     modeBtns+controlsHtml+
     '<p id="error-msg" style="color:#c0392b;font-size:10px;letter-spacing:1px;margin-bottom:24px;max-width:480px;"></p>'+
-    gridHtml;
+    loadingHtml+optionsHtml+gridHtml;
 
-  renderMeter();
   var sc=document.getElementById('canvas-spiral-ref');
   if(sc&&!sc._running){sc._running=true;runSpiral(sc);}
 }
