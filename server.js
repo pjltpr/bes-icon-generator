@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: "4mb" }));
@@ -10,7 +11,7 @@ app.use(express.static("public"));
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
 
-async function callGroq(systemPrompt, userPrompt, retries = 3) {
+async function callGroq(systemPrompt, userPrompt, maxTokens, retries = 3) {
   for (let attempt = 0; attempt < retries; attempt++) {
     const response = await fetch(GROQ_API_URL, {
       method: "POST",
@@ -20,8 +21,8 @@ async function callGroq(systemPrompt, userPrompt, retries = 3) {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 1000,
-        temperature: 1,
+        max_tokens: maxTokens,
+        temperature: 0.9,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -47,26 +48,20 @@ async function callGroq(systemPrompt, userPrompt, retries = 3) {
 }
 
 app.post("/api/generate", async (req, res) => {
-  const { subject, systemPrompt, geometryPrompt, renderPrompt } = req.body;
-  if (!subject || !systemPrompt || !geometryPrompt || !renderPrompt) {
+  const { subject, systemPromptGeometry, systemPromptRender, geometryPrompt, renderPrompt } = req.body;
+  if (!subject || !systemPromptGeometry || !systemPromptRender || !geometryPrompt || !renderPrompt) {
     return res.status(400).json({ error: "Missing required fields" });
   }
   if (!process.env.GROQ_API_KEY) {
     return res.status(500).json({ error: "GROQ_API_KEY is not configured on the server." });
   }
-
   try {
-    // Call 1: geometry decision only, no SVG reference
     console.log(`[geometry] ${subject}`);
-    const geometry = await callGroq(
-      "You are a geometric observer. When given a subject, you describe its essential geometry in plain text. Be specific and concrete. No SVG, no code, no markdown. Just a clear geometric description in 3-5 sentences.",
-      geometryPrompt
-    );
+    const geometry = await callGroq(systemPromptGeometry, geometryPrompt, 1000);
     console.log(`[geometry] done: ${geometry.slice(0, 120)}`);
 
-    // Call 2: render using geometry spec + style reference
     console.log(`[render] ${subject}`);
-    const svg = await callGroq(systemPrompt, renderPrompt.replace("{{GEOMETRY}}", geometry));
+    const svg = await callGroq(systemPromptRender, renderPrompt.replace("{{GEOMETRY}}", geometry), 1800);
     console.log(`[render] done, length: ${svg.length}`);
 
     res.json({ text: svg, geometry });
