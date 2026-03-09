@@ -33,25 +33,7 @@ var NETWORK_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fil
 // ── Compressed family vocabulary for model reference ──
 // Full SVG shown only for the primary reference. Others are structural summaries.
 // This keeps the system prompt under ~3500 tokens while giving the model the full visual vocabulary.
-var FAMILY_VOCAB =
-'You have 5 visual families to draw from. You may use one or blend elements from multiple.\n\n'+
 
-'SPIRAL — concentric coiling paths from center outward. Echo layers offset by 0.8px radius. Dashoffset reveal with stagger 0.3s. Displacement scale 1.4. Dot at spiral center. Best for: vortex, galaxy, shell, helix, comet, tornado, whirlpool.\n'+
-'STRUCTURE: 3 concentric spiral paths, same curve offset by 0.8px radius each. Dashoffset reveal, stagger 0.3s, opacity 1.0/0.52/0.25. @keyframes: 0%{dashoffset:LEN;opacity:0}10%{opacity:1}62%{dashoffset:0;opacity:1}80%{opacity:0}100%{dashoffset:LEN;opacity:0}. Dot at spiral center r=1.3.\n\n'+
-
-'RIPPLE — concentric ellipses scaling outward from center. Scale transform animation, stagger 0.6s. Opacity 0.4/0.6/1.0 inward. Dot at center. Best for: wave, pulse, orbit, echo, broadcast, signal, sonar, tide, ripple.\n'+
-'STRUCTURE: 3 ellipses rx/ry shrinking inward. @keyframes: 0%{opacity:0;transform:scale(0.5)} 20%{opacity:1} 100%{opacity:0.7;transform:scale(1)}\n\n'+
-
-'ATTRACTOR — looping figure-eight or lemniscate path that crosses itself. Echo paths slightly inset. Dashoffset reveal alternating direction. Dot at crossing point. Best for: infinity, feedback loop, entanglement, oscillation, thread, chain, DNA.\n'+
-'STRUCTURE: 3 echo paths tracing figure-eight. @keyframes alternate: 0%{dashoffset:LEN;opacity:0} 20%{opacity:1} 100%{dashoffset:0}\n\n'+
-
-'NETWORK — branching paths from center node to outer nodes, then secondary branches. Stagger 0.28s per branch. Animated dots at nodes. Best for: root system, lightning, mycelium, neural net, tree, coral, delta, web.\n'+
-'STRUCTURE: 5 primary paths + 4 secondary. @keyframes: 0%{dashoffset:60;opacity:0} 12%{opacity:1} 65%{dashoffset:0;opacity:1} 82%{opacity:0} 100%{dashoffset:60;opacity:0}\n\n'+
-
-'GRID — partial grid lines top-left dissolving into scattered dot particles bottom-right. Two independent animation systems. Best for: chaos, entropy, glitch, data, static, scatter, noise, fragmentation.\n'+
-'STRUCTURE: 6 short lines with dashoffset reveal + 9 dots with translate animation. Two separate @keyframes.\n\n'+
-
-'BLENDING — you may combine families when the subject calls for it. Examples: a storm could spiral paths with network branches. A threshold could be a single attractor line crossing a ripple. A pulse could use ripple timing with attractor geometry. Be creative with combinations.';
 
 // ── Profile ──
 var DEFAULT_PROFILE={familyWeights:{spiral:1,ripple:1,attractor:1,network:1,grid:1},displacementScale:1.3,echoLayers:3,primaryStroke:1.1,animDuration:3,animStyle:{dashoffset:1,scale:0,translate:0},density:5,likedSubjects:[],dislikedSubjects:[],feedbackLog:[]};
@@ -91,23 +73,18 @@ function profileToDirective(){
 }
 
 function buildSystemPrompt(){
-  return 'You are an SVG animation artist for Butterfly Effect Studio (BES). You create animated icons — white strokes on transparent background, no fills except small dot accents, with a fractalNoise displacement filter.\n\n'+
+  return 'Animated icons built from precise geometric forms — spirals, lemniscates, concentric ellipses, branching paths, orbital arcs — rendered with a hand-drawn imperfection. Every path is echoed 2-3 times at decreasing opacity and stroke weight, staggered in time, so each shape feels like it was traced by an unsteady hand. A fractalNoise displacement filter breathes life into the geometry, making clean math feel organic. Paths draw on, hold, then fade in a continuous loop. One small filled dot anchors each composition at a meaningful point. The result is scientific imagery that feels alive.\n\n'+
+  'REFERENCE ICON (Attractor):\n'+
+  ATTRACTOR_SVG+'\n\n'+
   profileToDirective()+'\n\n'+
-  FAMILY_VOCAB+'\n\n'+
-  'THE BES VISUAL SYSTEM — ALWAYS APPLY\n'+
-  '1. SEED PATHS — 3 to 8 paths defining the subject simply and iconically.\n'+
-  '2. ECHO LAYERS — every seed path echoed 2-3 times. Opacity: 1.0 > 0.6 > 0.35 > 0.2. Stagger 0.25-0.35s.\n'+
-  '3. REVEAL — stroke-dasharray + stroke-dashoffset. Draw on, hold, fade. All infinite.\n'+
-  '4. DISPLACEMENT — one fractalNoise feDisplacementMap per icon. Unique filter id and class prefixes every time.\n'+
-  '5. STROKES — Primary: 0.9-1.3. Echo 1: 0.55-0.7. Echo 2: 0.3-0.45. stroke-linecap="round" everywhere.\n'+
-  '6. DOT — one filled circle r 1.0-1.8 at a meaningful anchor point.\n\n'+
   'HARD RULES\n'+
   '- Output ONLY raw SVG. No markdown, no backticks, no explanation.\n'+
   '- Opening tag exactly: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64">\n'+
   '- All styles inside <defs><style></style></defs>\n'+
   '- White strokes only. No fills except dot accents. stroke-linecap="round" everywhere.\n'+
   '- Unique filter id and class prefixes. Never reuse fa, fr, fg, fn, fsp.\n'+
-  '- All animations infinite. Never static. Never skip echo system. One SVG only.';
+  '- All animations infinite. Never static. One SVG only.';
+}
 }
 
 // ── GIF encoder ──
