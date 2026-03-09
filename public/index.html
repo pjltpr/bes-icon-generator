@@ -240,7 +240,7 @@ async function generate(subject){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         system:buildSystemPrompt(),
-        prompt:'Subject: '+s+'\n\nStep 1: Identify the single most iconic, geometrically reducible element of this subject.\nStep 2: Choose which family or combination of families best expresses this subject visually. Be creative — unexpected combinations are encouraged.\nStep 3: Build the icon using the BES visual system. Apply echo layers and displacement.\nStep 4: Output the SVG and nothing else.'
+        prompt:'Subject: '+s+'\n\nStep 1: Identify the single most iconic, geometrically reducible element of this subject.\nStep 2: Decide what geometric form best captures the essence of this subject. Do not default to the reference — invent the right geometry for this subject.\nStep 3: Build the icon in the same visual language as the reference. Apply echo layers and displacement.\nStep 4: Output the SVG and nothing else.'
       })
     });
     var data=await res.json();
