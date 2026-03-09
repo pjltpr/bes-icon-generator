@@ -65,13 +65,13 @@ function profileToDirective(){
 }
 
 function buildSystemPrompt(){
-  return 'You are an SVG animation artist. Your job has two strict phases:\n\n'+
-  'PHASE 1 — GEOMETRY (driven entirely by the subject):\n'+
-  'Look at the subject. What is its most characteristic shape or motion? Build your paths, ellipses, and lines from that. Do not default to loops or closed curves unless the subject genuinely calls for one. A tornado is stacked compressing ellipses. A bird is two opposing arcs from a shared axis. A lightning bolt is a jagged descending path. Let the subject dictate the geometry completely. The reference icon below has nothing to do with your geometry decision.\n\n'+
-  'PHASE 2 — STYLE (driven by the reference icon):\n'+
-  'Once you have your geometry, render it in this exact visual language:\n'+
-  ATTRACTOR_SVG+'\n'+
-  'From this reference, take: the echo layer system (3 paths at opacity 1.0, 0.5, 0.3 with staggered timing), the fractalNoise displacement filter, the dashoffset draw-on animation, the stroke weight progression (1.0 / 0.6 / 0.4). Apply all of this to your geometry. Do not copy the reference geometry.\n\n'+
+  return 'You are an SVG animation artist. You will be given a geometry specification and a style reference. Your only job is to execute the geometry in the style of the reference.\n\n'+
+  'STYLE REFERENCE:\n'+
+  ATTRACTOR_SVG+'\n\n'+
+  'From this reference take: the echo layer system (3 instances of each element at opacity 1.0 / 0.5 / 0.3 with staggered timing), the fractalNoise displacement filter, the dashoffset draw-on animation, the stroke weight progression (1.0 / 0.6 / 0.4). Do not copy the reference geometry under any circumstances.\n\n'+
+  'ELEMENT SELECTION: Use the SVG element that honestly matches the geometry. Rings and halos are ellipses. Straight edges are lines. Organic curves are paths. Mixed subjects use mixed elements. Never force cubic bezier paths onto geometry that is not curved.\n\n'+
+  'ANIMATION: If the subject has a natural direction (falling, rising, expanding, cascading) use a draw-on fade-out cycle: 0% dashoffset full, draw on, hold, fade, reset. If the subject is cyclical or looping use alternate. Choose based on the geometry, not habit.\n\n'+
+  'FILTER SEED: Use a random number between 1 and 99 for the feTurbulence seed. Never use seed 9.\n\n'+
   profileToDirective()+'\n\n'+
   'HARD RULES\n'+
   '- Output ONLY raw SVG. No markdown, no backticks, no explanation.\n'+
@@ -80,6 +80,14 @@ function buildSystemPrompt(){
   '- White strokes only. No fills except small dot accents where meaningful. stroke-linecap="round" everywhere.\n'+
   '- Unique filter id and class prefixes every time. Never reuse fa, fr, fg, fn, fsp.\n'+
   '- All animations infinite. Never static. One SVG only.';
+}
+
+function buildGeometryPrompt(subject){
+  return 'Subject: '+subject+'\n\nDescribe the essential geometry of this subject. What is its most characteristic shape? What SVG primitives would honestly represent it — ellipses, lines, or curves? What is its dominant direction or motion? Be specific about proportions and composition within a 64x64 space. Do not write any code.';
+}
+
+function buildRenderPrompt(subject){
+  return 'Subject: '+subject+'\n\nGeometry specification:\n{{GEOMETRY}}\n\nBuild this geometry using the style reference. Apply echo layers, displacement filter, and animation. Output the SVG and nothing else.';
 }
 
 // ── GIF encoder ──
@@ -235,8 +243,10 @@ async function generate(subject){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        system:buildSystemPrompt(),
-        prompt:'Subject: '+s+'\n\nPhase 1 — Geometry: What is the single most characteristic shape or motion of this subject? Define your paths, ellipses, and lines from that observation alone. Do not borrow geometry from the reference icon.\nPhase 2 — Style: Apply the visual language from the reference to your geometry. Echo layers, displacement filter, dashoffset animation, stroke weight progression.\nOutput the SVG and nothing else.'
+        subject:s,
+        systemPrompt:buildSystemPrompt(),
+        geometryPrompt:buildGeometryPrompt(s),
+        renderPrompt:buildRenderPrompt(s)
       })
     });
     var data=await res.json();
