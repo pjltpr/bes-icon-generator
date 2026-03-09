@@ -379,24 +379,50 @@ async function animateOption(optionIndex) {
   if(!opt) return;
   animatingIndexes[optionIndex] = true;
   showError('');
+  showDebug('Calling /api/animate...');
   render();
 
   try {
-    var animData = await apiCall('/api/animate', {
-      systemPrompt: buildAnimateSystemPrompt(),
-      prompt: 'Subject: ' + currentSubject + '\n\nAnimate this SVG icon. The animation must reflect what "' + currentSubject + '" does. Return the complete animated SVG.\n\n' + opt.svg
+    var res = await fetch('/api/animate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        systemPrompt: buildAnimateSystemPrompt(),
+        prompt: 'Subject: ' + currentSubject + '\n\nAnimate this SVG icon. The animation must reflect what "' + currentSubject + '" does. Return the complete animated SVG.\n\n' + opt.svg
+      })
     });
-    var svg = extractSVG(animData.text || '');
-    if(!svg.includes('<svg')) throw new Error('No SVG in response.');
+    showDebug('Status: ' + res.status);
+    var raw = await res.text();
+    showDebug('Response length: ' + raw.length + ' chars. First 200: ' + raw.slice(0,200));
+    var data;
+    try { data = JSON.parse(raw); } catch(e) { throw new Error('JSON parse failed: ' + raw.slice(0,100)); }
+    if(data.error) throw new Error('API error: ' + data.error);
+    var text = data.text || '';
+    showDebug('Text length: ' + text.length + '. Has svg tag: ' + text.includes('<svg'));
+    var svg = extractSVG(text);
+    showDebug('Extracted SVG length: ' + svg.length);
+    if(!svg.includes('<svg')) throw new Error('No SVG found in response. Raw text: ' + text.slice(0,200));
     var icon = { prompt: currentSubject, svg: svg, id: Date.now() + Math.random() };
     storeSVG(icon.id, icon.svg);
     animatedIcons.unshift(icon);
     if(animatedIcons.length > 32) animatedIcons = animatedIcons.slice(0, 32);
+    showDebug('Success. Icon added.');
   } catch(e) {
     showError(e.message || 'Animation failed.');
+    showDebug('ERROR: ' + e.message);
   }
   delete animatingIndexes[optionIndex];
   render();
+}
+
+function showDebug(msg) {
+  var el = document.getElementById('debug-panel');
+  if(!el) return;
+  var line = document.createElement('div');
+  line.textContent = new Date().toISOString().slice(11,19) + ' ' + msg;
+  line.style.cssText = 'font-size:9px;opacity:0.6;border-bottom:1px solid #1a1a1a;padding:3px 0;';
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
 }
 
 function makeExportDropdown(id, name) {
@@ -555,6 +581,7 @@ function render(){
     '<div style="display:flex;gap:10px;margin-bottom:36px;flex-wrap:wrap;">'+refCardsHtml+'</div>'+
     modeBtns+controlsHtml+
     '<p id="error-msg" style="color:#c0392b;font-size:10px;letter-spacing:1px;margin-bottom:24px;max-width:480px;"></p>'+
+    '<div id="debug-panel" style="max-width:620px;margin-bottom:24px;background:#0e0e0e;border:1px solid #1a1a1a;padding:8px 12px;max-height:120px;overflow-y:auto;font-family:monospace;color:#fff;"></div>'+
     loadingHtml+optionsHtml+gridHtml;
 
   var sc=document.getElementById('canvas-spiral-ref');
