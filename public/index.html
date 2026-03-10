@@ -30,6 +30,97 @@ var RIPPLE_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill
 var GRID_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><style>.gl{stroke-dasharray:30;stroke-dashoffset:30}.g1{animation:gT 3s 0.00s ease-in-out infinite alternate}.g2{animation:gT 3s 0.15s ease-in-out infinite alternate}.g3{animation:gT 3s 0.30s ease-in-out infinite alternate}.g4{animation:gT 3s 0.45s ease-in-out infinite alternate}.g5{animation:gT 3s 0.60s ease-in-out infinite alternate}.g6{animation:gT 3s 0.75s ease-in-out infinite alternate}@keyframes gT{0%{stroke-dashoffset:30;opacity:0}30%{opacity:1}100%{stroke-dashoffset:0;opacity:0.85}}.sd{animation:dD 3s ease-in-out infinite alternate}.s1{animation-delay:0.8s}.s2{animation-delay:1.0s}.s3{animation-delay:1.2s}.s4{animation-delay:1.4s}.s5{animation-delay:1.6s}.s6{animation-delay:1.8s}.s7{animation-delay:2.0s}.s8{animation-delay:2.2s}.s9{animation-delay:2.4s}@keyframes dD{0%{opacity:0;transform:translate(3px,3px)}40%{opacity:0.9}100%{opacity:0.7;transform:translate(0,0)}}</style></defs><g><line class="gl g1" x1="8" y1="12" x2="28" y2="12" stroke="white" stroke-width="0.7"/><line class="gl g2" x1="8" y1="20" x2="28" y2="20" stroke="white" stroke-width="0.7"/><line class="gl g3" x1="8" y1="28" x2="24" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g4" x1="12" y1="8" x2="12" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g5" x1="20" y1="8" x2="20" y2="28" stroke="white" stroke-width="0.7"/><line class="gl g6" x1="28" y1="8" x2="28" y2="24" stroke="white" stroke-width="0.7"/><circle class="sd s1" cx="38" cy="36" r="1.2" fill="white"/><circle class="sd s2" cx="46" cy="34" r="1.0" fill="white"/><circle class="sd s3" cx="54" cy="30" r="0.8" fill="white"/><circle class="sd s4" cx="36" cy="44" r="1.0" fill="white"/><circle class="sd s5" cx="44" cy="42" r="0.9" fill="white"/><circle class="sd s6" cx="52" cy="40" r="0.7" fill="white"/><circle class="sd s7" cx="42" cy="50" r="0.8" fill="white"/><circle class="sd s8" cx="50" cy="50" r="0.6" fill="white"/><circle class="sd s9" cx="56" cy="56" r="0.5" fill="white"/></g></svg>';
 var NETWORK_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" width="64" height="64"><defs><style>.n1{stroke-dasharray:60;stroke-dashoffset:60;animation:nD 3.5s ease-in-out infinite}.n2{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.28s ease-in-out infinite}.n3{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.56s ease-in-out infinite}.n4{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 0.84s ease-in-out infinite}.n5{stroke-dasharray:40;stroke-dashoffset:40;animation:nD 3.5s 1.12s ease-in-out infinite}.n6{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.4s ease-in-out infinite;opacity:0.6}.n7{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.55s ease-in-out infinite;opacity:0.6}.n8{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.7s ease-in-out infinite;opacity:0.6}.n9{stroke-dasharray:25;stroke-dashoffset:25;animation:nD 3.5s 1.85s ease-in-out infinite;opacity:0.6}.nd{animation:ndF 3.5s ease-in-out infinite}@keyframes nD{0%{stroke-dashoffset:60;opacity:0}12%{opacity:1}65%{stroke-dashoffset:0;opacity:1}82%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:60;opacity:0}}@keyframes ndF{0%{opacity:0}15%{opacity:1}70%{opacity:1}85%{opacity:0}100%{opacity:0}}</style></defs><g><path class="n1" d="M32,32 Q22,24 13,20" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n2" d="M32,32 Q42,25 51,22" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n3" d="M32,32 Q20,40 11,45" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n4" d="M32,32 Q44,40 53,45" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n5" d="M32,32 Q33,18 33,7" stroke="white" stroke-width="0.85" stroke-linecap="round" fill="none"/><path class="n6" d="M13,20 Q9,26 7,31" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n7" d="M51,22 Q55,28 57,33" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n8" d="M11,45 Q6,48 4,54" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><path class="n9" d="M53,45 Q58,48 60,54" stroke="white" stroke-width="0.45" stroke-linecap="round" fill="none"/><circle class="nd" cx="32" cy="32" r="2" fill="white"/><circle class="nd" cx="13" cy="20" r="1.4" fill="white" style="animation-delay:0.28s"/><circle class="nd" cx="51" cy="22" r="1.4" fill="white" style="animation-delay:0.56s"/><circle class="nd" cx="11" cy="45" r="1.2" fill="white" style="animation-delay:0.84s"/><circle class="nd" cx="53" cy="45" r="1.2" fill="white" style="animation-delay:1.12s"/><circle class="nd" cx="33" cy="7" r="1.2" fill="white" style="animation-delay:1.12s"/></g></svg>';
 
+// ── Unique class prefix for animation isolation ──
+function makeid(len){var c='abcdefghijklmnopqrstuvwxyz',r='';for(var i=0;i<len;i++)r+=c[Math.floor(Math.random()*c.length)];return r;}
+
+function scopeSVGClasses(svg) {
+  var prefix = makeid(6);
+  // Find all class names defined in <style> blocks
+  var styleMatch = svg.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+  if (!styleMatch) return svg;
+  var styleContent = styleMatch[1];
+  // Extract all class names defined in the style block (e.g. .ap1, .r2, .nD)
+  var classNames = [];
+  var re = /\.([\w-]+)\s*\{/g;
+  var m;
+  while ((m = re.exec(styleContent)) !== null) {
+    if (classNames.indexOf(m[1]) === -1) classNames.push(m[1]);
+  }
+  // Also catch keyframe animation names referenced in animation properties
+  var animNames = [];
+  var animRe = /animation:\s*[\w\s,.]*?([\w]+)\s+[\d]/g;
+  while ((m = animRe.exec(styleContent)) !== null) {
+    // last word before the duration is the animation name — capture keyframe names instead
+  }
+  var keyframeRe = /@keyframes\s+([\w-]+)/g;
+  while ((m = keyframeRe.exec(styleContent)) !== null) {
+    if (animNames.indexOf(m[1]) === -1) animNames.push(m[1]);
+  }
+  // Replace class names and keyframe names throughout the SVG
+  var result = svg;
+  // Sort by length descending to avoid partial replacements
+  classNames.sort(function(a,b){return b.length-a.length;});
+  animNames.sort(function(a,b){return b.length-a.length;});
+  classNames.forEach(function(cn) {
+    var escaped = cn.replace(/[-]/g,'\\-');
+    // In style block: .className
+    result = result.replace(new RegExp('\\.'+escaped+'([\\s{,:])', 'g'), '.'+prefix+cn+'$1');
+    // In HTML attributes: class="... className ..."
+    result = result.replace(new RegExp('(class="[^"]*?)\\b'+escaped+'\\b([^"]*?")', 'g'), '$1'+prefix+cn+'$2');
+  });
+  animNames.forEach(function(an) {
+    var escaped = an.replace(/[-]/g,'\\-');
+    // In @keyframes declaration
+    result = result.replace(new RegExp('@keyframes\\s+'+escaped+'\\b', 'g'), '@keyframes '+prefix+an);
+    // In animation property values
+    result = result.replace(new RegExp('animation(-name)?:\\s*([^;}"\']*?)\\b'+escaped+'\\b', 'g'), function(match, p1, p2) {
+      return match.replace(new RegExp('\\b'+escaped+'\\b'), prefix+an);
+    });
+  });
+  return result;
+}
+
+// ── extractSVG — strict ──
+function extractSVG(r) {
+  r = r.replace(/^```[\w]*\n?/gm, '').replace(/\n?```$/gm, '').trim();
+  var start = r.search(/<svg[\s>]/i);
+  if (start === -1) return '';
+  var end = r.indexOf('</svg>', start);
+  if (end === -1) return '';
+  var svg = r.slice(start, end + 6);
+  if (!svg.includes('xmlns') || !svg.includes('viewBox')) return '';
+  if (!/<(path|circle|ellipse|line|rect|polyline|polygon)/.test(svg)) return '';
+  if (/<\/(div|p|span|button|html|body)>/i.test(svg)) return '';
+  return svg;
+}
+
+// ── Favourites (localStorage, cap 12) ──
+var FAV_KEY = 'bes-icon-favourites-v1';
+var MAX_FAVS = 12;
+
+function loadFavourites() {
+  try { var s = localStorage.getItem(FAV_KEY); return s ? JSON.parse(s) : []; }
+  catch(e) { return []; }
+}
+function saveFavourites(favs) {
+  try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch(e) {}
+}
+function addFavourite(icon) {
+  var favs = loadFavourites();
+  // Avoid duplicates by id
+  favs = favs.filter(function(f){ return f.id !== icon.id; });
+  favs.unshift({ id: icon.id, prompt: icon.prompt, svg: icon.svg, savedAt: Date.now() });
+  if (favs.length > MAX_FAVS) favs = favs.slice(0, MAX_FAVS);
+  saveFavourites(favs);
+}
+function removeFavourite(id) {
+  var favs = loadFavourites().filter(function(f){ return f.id !== id; });
+  saveFavourites(favs);
+}
+function isFavourite(id) {
+  return loadFavourites().some(function(f){ return f.id === id; });
+}
+
 // ── Profile ──
 var DEFAULT_PROFILE={likedSubjects:[],dislikedSubjects:[],feedbackLog:[]};
 var profile=loadProfile();
@@ -50,6 +141,22 @@ function handleFeedback(id, dir) {
   profile.feedbackLog=profile.feedbackLog.slice(-19).concat([{dir:dir,t:Date.now()}]);
   feedbackMap[id]=dir;
   saveProfile();
+  render();
+}
+
+function handleHeart(id) {
+  var icon = animatedIcons.find(function(i){ return i.id == id; });
+  // Also check favourites list itself (re-hearting from favs section)
+  if (!icon) {
+    var favs = loadFavourites();
+    icon = favs.find(function(f){ return f.id == id; });
+  }
+  if (!icon) return;
+  if (isFavourite(id)) {
+    removeFavourite(id);
+  } else {
+    addFavourite(icon);
+  }
   render();
 }
 
@@ -194,6 +301,20 @@ async function captureSVGGIF(svgString,name,variant){
   triggerGIFDownload(encodeGIF(canvases,size,size,Math.round(100/fps)),name+'-'+variant+'.gif');
 }
 
+// ── Canvas spiral GIF capture ──
+async function captureCanvasGIF(sourceCanvas, name) {
+  var size = 128, fps = 20, duration = 4, totalFrames = fps * duration;
+  var canvases = [];
+  for (var i = 0; i < totalFrames; i++) {
+    await new Promise(function(r){ setTimeout(r, 1000/fps); });
+    var cv = document.createElement('canvas'); cv.width = size; cv.height = size;
+    var ctx = cv.getContext('2d');
+    ctx.drawImage(sourceCanvas, 0, 0, size, size);
+    canvases.push(cv);
+  }
+  triggerGIFDownload(encodeGIF(canvases, size, size, Math.round(100/fps)), name + '.gif');
+}
+
 function triggerGIFDownload(gif,filename){
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([gif],{type:'image/gif'}));a.download=filename;a.click();
 }
@@ -211,6 +332,17 @@ function downloadPNGfromSVG(svgString,name,variant,size){
   var img=new Image();img.src=url;
   img.onload=function(){var cv=document.createElement('canvas');cv.width=size;cv.height=size;var ctx=cv.getContext('2d');if(bgColor){ctx.fillStyle=bgColor;ctx.fillRect(0,0,size,size);}ctx.drawImage(img,0,0,size,size);var a=document.createElement('a');a.href=cv.toDataURL('image/png');a.download=name+'-'+variant+'.png';a.click();URL.revokeObjectURL(url);};
 }
+
+// ── Canvas PNG export ──
+function downloadCanvasPNG(canvasId, name) {
+  var cv = document.getElementById(canvasId);
+  if (!cv) return;
+  var a = document.createElement('a');
+  a.href = cv.toDataURL('image/png');
+  a.download = name + '.png';
+  a.click();
+}
+
 function copySVG(svg){
   try{var ta=document.createElement('textarea');ta.value=svg;ta.style.cssText='position:fixed;left:-9999px;top:-9999px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);return true;}
   catch(e){return false;}
@@ -287,10 +419,22 @@ function toggleDropdown(id){
 
 var SUBJECT_POOL=["wave","tornado","whirlpool","lightning bolt","ripple","current","vortex","gust of wind","updraft","aurora","solar system","black hole","comet","nebula","orbit","eclipse","pulsar","galaxy spiral","shooting star","event horizon","leaf","fern","coral","seed pod","vine","petal","root system","lotus","moss","spore","flame","smoke","snowflake","ice crystal","steam","ember","frost","raindrop","bubble","tide","infinity loop","spiral","spider web","compass rose","labyrinth","fractal","helix","interference pattern","signal wave","feedback loop","jellyfish","nautilus","butterfly","bird in flight","dragonfly","firefly","moth","sea anemone","eye","feather","hourglass","prism","thread","signal burst","chain","echo"];
 var THEMES=["butterfly","cocoon","metamorphosis","emergence","signal","chaos","threshold","cascade","entanglement"];
-var VARIANTS=[{id:"white-transparent",label:"White / Transparent"},{id:"white-black",label:"White / Black bg"},{id:"black-transparent",label:"Black / Transparent"},{id:"black-white",label:"Black / White bg"}];
 
 function pickRandom(arr){return arr[Math.floor(Math.random()*arr.length)];}
-function extractSVG(r){r=r.replace(/^```[\w]*\n?/gm,'').replace(/\n?```$/gm,'').trim();var m=r.match(/<svg[\s\S]*<\/svg>/i);return m?m[0]:r;}
+
+function extractSVG(r) {
+  r = r.replace(/^```[\w]*\n?/gm, '').replace(/\n?```$/gm, '').trim();
+  var start = r.search(/<svg[\s>]/i);
+  if (start === -1) return '';
+  var end = r.indexOf('</svg>', start);
+  if (end === -1) return '';
+  var svg = r.slice(start, end + 6);
+  if (!svg.includes('xmlns') || !svg.includes('viewBox')) return '';
+  if (!/<(path|circle|ellipse|line|rect|polyline|polygon)/.test(svg)) return '';
+  if (/<\/(div|p|span|button|html|body)>/i.test(svg)) return '';
+  return svg;
+}
+
 function storeSVG(id,svg){svgStore[id]=svg;}
 function showError(msg){var el=document.getElementById('error-msg');if(el)el.textContent=msg;}
 
@@ -317,7 +461,6 @@ async function generateOptions(subject) {
   render();
 
   try {
-    // Call 1: geometry (Groq)
     var geoData = await apiCall('/api/geometry', {
       systemPrompt: buildGeometrySystemPrompt(),
       prompt: 'Subject: ' + currentSubject + '\n\nDescribe three distinct geometric approaches for an icon of this subject within the Butterfly Effect visual language.'
@@ -325,10 +468,8 @@ async function generateOptions(subject) {
     geometryText = geoData.text;
     loadingGeometry = false;
 
-    // Parse the three approaches
     var approaches = parseApproaches(geometryText);
 
-    // Call 2-4: render each approach (Anthropic) sequentially
     for(var i = 0; i < Math.min(3, approaches.length); i++) {
       loadingOptions.push(i);
       render();
@@ -361,7 +502,6 @@ function parseApproaches(text) {
     var trimmed = parts[i].trim();
     if(trimmed.length > 20) approaches.push(trimmed);
   }
-  // fallback: if parsing fails, use full text as one approach
   if(approaches.length === 0) approaches.push(text);
   return approaches;
 }
@@ -379,7 +519,6 @@ async function animateOption(optionIndex) {
   if(!opt) return;
   animatingIndexes[optionIndex] = true;
   showError('');
-  showDebug('Calling /api/animate...');
   render();
 
   try {
@@ -391,38 +530,24 @@ async function animateOption(optionIndex) {
         prompt: 'Subject: ' + currentSubject + '\n\nAnimate this SVG icon. The animation must reflect what "' + currentSubject + '" does. Return the complete animated SVG.\n\n' + opt.svg
       })
     });
-    showDebug('Status: ' + res.status);
     var raw = await res.text();
-    showDebug('Response length: ' + raw.length + ' chars. First 200: ' + raw.slice(0,200));
     var data;
     try { data = JSON.parse(raw); } catch(e) { throw new Error('JSON parse failed: ' + raw.slice(0,100)); }
     if(data.error) throw new Error('API error: ' + data.error);
     var text = data.text || '';
-    showDebug('Text length: ' + text.length + '. Has svg tag: ' + text.includes('<svg'));
     var svg = extractSVG(text);
-    showDebug('Extracted SVG length: ' + svg.length);
-    if(!svg.includes('<svg')) throw new Error('No SVG found in response. Raw text: ' + text.slice(0,200));
+    if(!svg.includes('<svg')) throw new Error('No valid SVG in response.');
+    // Scope animation classes to prevent collisions
+    svg = scopeSVGClasses(svg);
     var icon = { prompt: currentSubject, svg: svg, id: Date.now() + Math.random() };
     storeSVG(icon.id, icon.svg);
     animatedIcons.unshift(icon);
     if(animatedIcons.length > 32) animatedIcons = animatedIcons.slice(0, 32);
-    showDebug('Success. Icon added.');
   } catch(e) {
     showError(e.message || 'Animation failed.');
-    showDebug('ERROR: ' + e.message);
   }
   delete animatingIndexes[optionIndex];
   render();
-}
-
-function showDebug(msg) {
-  var el = document.getElementById('debug-panel');
-  if(!el) return;
-  var line = document.createElement('div');
-  line.textContent = new Date().toISOString().slice(11,19) + ' ' + msg;
-  line.style.cssText = 'font-size:9px;opacity:0.6;border-bottom:1px solid #1a1a1a;padding:3px 0;';
-  el.appendChild(line);
-  el.scrollTop = el.scrollHeight;
 }
 
 function makeExportDropdown(id, name, isAnimated) {
@@ -431,20 +556,17 @@ function makeExportDropdown(id, name, isAnimated) {
   html += '<button onclick="toggleDropdown(\''+id+'\')" style="width:100%;padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Export ▾</button>';
   html += '<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#0e0e0e;border:1px solid #2a2a2a;z-index:100;padding:12px;min-width:180px;">';
 
-  // PNG
   html += '<div style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;opacity:0.35;margin-bottom:6px;">PNG</div>';
   html += '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px;">';
   html += '<button onclick="downloadPNG(\'white-transparent\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">White / Transparent</button>';
   html += '<button onclick="downloadPNG(\'black-transparent\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">Black / Transparent</button>';
   html += '</div>';
 
-  // SVG
   html += '<div style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;opacity:0.35;margin-bottom:6px;">SVG</div>';
   html += '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:'+(isAnimated?'12px':'0px')+';">';
   html += '<button onclick="downloadSVGById(\'white-transparent\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">Download</button>';
   html += '</div>';
 
-  // GIF — animated icons only
   if(isAnimated) {
     html += '<div style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;opacity:'+(gifBusy?0.2:0.35)+';margin-bottom:6px;">GIF</div>';
     html += '<div style="display:flex;flex-direction:column;gap:4px;">';
@@ -455,6 +577,32 @@ function makeExportDropdown(id, name, isAnimated) {
 
   html += '</div></div>';
   return html;
+}
+
+// ── Spiral export dropdown ──
+function makeSpiralExportDropdown() {
+  var gifBusy = !!svgStore['gif-spiral-canvas'];
+  var html = '<div data-dropdown="spiral-export" style="position:relative;width:100%;">';
+  html += '<button onclick="toggleDropdown(\'spiral-export\')" style="width:100%;padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Export ▾</button>';
+  html += '<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#0e0e0e;border:1px solid #2a2a2a;z-index:100;padding:12px;min-width:180px;">';
+  html += '<div style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;opacity:0.35;margin-bottom:6px;">PNG</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px;">';
+  html += '<button onclick="downloadCanvasPNG(\'canvas-spiral-ref\',\'spiral\');toggleDropdown(\'spiral-export\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">Current Frame</button>';
+  html += '</div>';
+  html += '<div style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;opacity:'+(gifBusy?0.2:0.35)+';margin-bottom:6px;">GIF</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:4px;">';
+  html += '<button '+(gifBusy?'disabled':'')+' onclick="handleSpiralGIFExport();toggleDropdown(\'spiral-export\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:'+(gifBusy?'not-allowed':'pointer')+';border:1px solid #2a2a2a;color:#fff;background:#161616;opacity:'+(gifBusy?0.3:1)+';">'+(gifBusy?'Exporting...':'Capture Animation')+'</button>';
+  html += '</div>';
+  html += '</div></div>';
+  return html;
+}
+
+async function handleSpiralGIFExport() {
+  var cv = document.getElementById('canvas-spiral-ref');
+  if (!cv) return;
+  svgStore['gif-spiral-canvas'] = true; render();
+  try { await captureCanvasGIF(cv, 'spiral'); } catch(e) { console.error(e); }
+  delete svgStore['gif-spiral-canvas']; render();
 }
 
 function downloadPNG(variant,id,name){var svg=svgStore[id];if(svg)downloadPNGfromSVG(svg,name,variant);}
@@ -490,9 +638,11 @@ function render(){
     refCardsHtml+=makeExportDropdown(item.key,item.label.toLowerCase(),true);
     refCardsHtml+='</div>';
   });
+  // Spiral card with export
   refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
   refCardsHtml+='<canvas id="canvas-spiral-ref" width="72" height="72" style="width:48px;height:48px;"></canvas>';
   refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">Spiral</span>';
+  refCardsHtml+=makeSpiralExportDropdown();
   refCardsHtml+='</div>';
 
   // Mode tabs
@@ -504,7 +654,6 @@ function render(){
   var isGenerating = loadingGeometry || loadingOptions.length > 0;
   var anyAnimating = Object.keys(animatingIndexes).length > 0;
 
-  // Controls
   var controlsHtml='<div style="max-width:480px;margin-bottom:36px;display:flex;flex-direction:column;gap:10px;">';
   if(mode==='custom'){
     controlsHtml+='<input id="custom-input" placeholder="Describe an icon..." onkeydown="if(event.key===\'Enter\'){var v=this.value.trim();if(v)generateOptions(v);}" style="background:#111;border:1px solid #222;color:#fff;padding:12px 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1px;outline:none;width:100%;"/>';
@@ -517,7 +666,6 @@ function render(){
   }
   controlsHtml+='</div>';
 
-  // Loading state
   var loadingHtml='';
   if(loadingGeometry){
     loadingHtml='<div style="max-width:480px;margin-bottom:24px;padding:16px;background:#111;border:1px solid #1e1e1e;">';
@@ -538,9 +686,7 @@ function render(){
       storeSVG(optId, opt.svg);
       optionsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:20px 12px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;">';
       optionsHtml+='<div style="width:64px;height:64px;">'+opt.svg+'</div>';
-      // Animate button
       optionsHtml+='<button onclick="animateOption('+opt.index+')" '+(isBusy?'disabled':'')+' style="width:100%;padding:8px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;cursor:'+(isBusy?'not-allowed':'pointer')+';border:1px solid #341C12;color:'+(isBusy?'#444':'#fff')+';background:#1a0e09;opacity:'+(isBusy?0.5:1)+';">'+(isBusy?'Animating...':'Animate')+'</button>';
-      // Static exports: PNG and copy SVG only
       optionsHtml+='<div style="display:flex;gap:6px;width:100%;">';
       optionsHtml+='<button onclick="downloadPNG(\'white-transparent\',\''+optId+'\',\'option-'+opt.index+'\')" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">PNG</button>';
       optionsHtml+='<button onclick="copyStaticSVG(\''+optId+'\',this)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Copy SVG</button>';
@@ -557,13 +703,36 @@ function render(){
     optionsHtml+='</div></div>';
   }
 
+  // Favourites section
+  var favs = loadFavourites();
+  var favsHtml = '';
+  if (favs.length > 0) {
+    favsHtml += '<div style="margin-bottom:40px;">';
+    favsHtml += '<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.2;margin-bottom:16px;">Favourites — '+favs.length+' / '+MAX_FAVS+'</p>';
+    favsHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-width:900px;">';
+    favs.forEach(function(fav) {
+      storeSVG(fav.id, fav.svg);
+      favsHtml += '<div style="background:#111;border:1px solid #2a1f10;display:flex;flex-direction:column;align-items:center;padding:28px 16px 16px;gap:10px;">';
+      favsHtml += '<div style="width:64px;height:64px;">'+fav.svg+'</div>';
+      favsHtml += '<p style="font-size:8px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.3;text-align:center;margin:0;">'+fav.prompt+'</p>';
+      favsHtml += '<div style="display:flex;gap:6px;width:100%;">';
+      favsHtml += '<button onclick="removeFavourite(\''+fav.id+'\');render();" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #2a1f10;color:#c8743a;background:#1a0e05;" title="Remove from favourites">♥</button>';
+      favsHtml += '<button id="copy-btn-'+fav.id+'" onclick="handleCopy(\''+fav.id+'\')" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Copy SVG</button>';
+      favsHtml += '</div>';
+      favsHtml += makeExportDropdown(fav.id, fav.prompt, true);
+      favsHtml += '</div>';
+    });
+    favsHtml += '</div></div>';
+  }
+
   // Animated icons grid
   var gridHtml='';
   if(animatedIcons.length > 0){
-    if(staticOptions.length === 0 && !isGenerating) gridHtml+='<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.15;margin-bottom:16px;">Generated</p>';
+    gridHtml+='<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.15;margin-bottom:16px;">Generated</p>';
     gridHtml+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-width:900px;">';
     animatedIcons.forEach(function(icon){
       var fb=feedbackMap[icon.id];
+      var faved = isFavourite(icon.id);
       var border=fb===1?'#2E5038':fb===-1?'#3a1a1a':'#1e1e1e';
       storeSVG(icon.id,icon.svg);
       gridHtml+='<div style="background:#111;border:1px solid '+border+';display:flex;flex-direction:column;align-items:center;padding:28px 16px 16px;gap:10px;">';
@@ -572,6 +741,7 @@ function render(){
       gridHtml+='<div style="display:flex;gap:6px;width:100%;">';
       gridHtml+='<button onclick="handleFeedback('+icon.id+',1)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===1?'#1E3325':'#0f0f0f')+';">✓</button>';
       gridHtml+='<button onclick="handleFeedback('+icon.id+',-1)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===-1?'#2a1010':'#0f0f0f')+';">✕</button>';
+      gridHtml+='<button onclick="handleHeart('+icon.id+')" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid '+(faved?'#2a1f10':'#222')+';color:'+(faved?'#c8743a':'#fff')+';background:'+(faved?'#1a0e05':'#0f0f0f')+';">♥</button>';
       gridHtml+='</div>';
       gridHtml+='<button id="copy-btn-'+icon.id+'" onclick="handleCopy('+icon.id+')" style="padding:6px 0;width:100%;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#151515;">Copy SVG</button>';
       gridHtml+=makeExportDropdown(icon.id,icon.prompt,true);
@@ -584,13 +754,12 @@ function render(){
 
   app.innerHTML=
     '<p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:0.4;margin:0 0 4px;">Butterfly Effect</p>'+
-    '<p style="font-size:10px;letter-spacing:1px;opacity:0.2;margin:0 0 28px;">Icon Generator — V8.0</p>'+
+    '<p style="font-size:10px;letter-spacing:1px;opacity:0.2;margin:0 0 28px;">Icon Generator — V8.1</p>'+
     '<p style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.2;margin-bottom:10px;">Reference Set</p>'+
     '<div style="display:flex;gap:10px;margin-bottom:36px;flex-wrap:wrap;">'+refCardsHtml+'</div>'+
     modeBtns+controlsHtml+
     '<p id="error-msg" style="color:#c0392b;font-size:10px;letter-spacing:1px;margin-bottom:24px;max-width:480px;"></p>'+
-    '<div id="debug-panel" style="max-width:620px;margin-bottom:24px;background:#0e0e0e;border:1px solid #1a1a1a;padding:8px 12px;max-height:120px;overflow-y:auto;font-family:monospace;color:#fff;"></div>'+
-    loadingHtml+optionsHtml+gridHtml;
+    loadingHtml+optionsHtml+favsHtml+gridHtml;
 
   var sc=document.getElementById('canvas-spiral-ref');
   if(sc&&!sc._running){sc._running=true;runSpiral(sc);}
