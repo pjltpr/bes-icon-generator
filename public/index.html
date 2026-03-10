@@ -425,27 +425,35 @@ function showDebug(msg) {
   el.scrollTop = el.scrollHeight;
 }
 
-function makeExportDropdown(id, name) {
+function makeExportDropdown(id, name, isAnimated) {
   var gifBusy = !!svgStore['gif-'+id];
-  var vShort = ['W/Transp','W/Black','B/Transp','B/White'];
   var html = '<div data-dropdown="'+id+'" style="position:relative;width:100%;">';
   html += '<button onclick="toggleDropdown(\''+id+'\')" style="width:100%;padding:5px 0;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Export ▾</button>';
-  html += '<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#0e0e0e;border:1px solid #2a2a2a;z-index:100;padding:10px 10px 8px;min-width:220px;">';
-  html += '<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #222;"><div></div>';
-  vShort.forEach(function(v){html+='<div style="font-size:6px;letter-spacing:0.8px;text-transform:uppercase;color:#fff;opacity:0.5;text-align:center;line-height:1.3;">'+v+'</div>';});
+  html += '<div class="dd-menu" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;background:#0e0e0e;border:1px solid #2a2a2a;z-index:100;padding:12px;min-width:180px;">';
+
+  // PNG
+  html += '<div style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;opacity:0.35;margin-bottom:6px;">PNG</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px;">';
+  html += '<button onclick="downloadPNG(\'white-transparent\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">White / Transparent</button>';
+  html += '<button onclick="downloadPNG(\'black-transparent\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">Black / Transparent</button>';
   html += '</div>';
-  html += '<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;margin-bottom:4px;align-items:center;">';
-  html += '<div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.9;">PNG</div>';
-  VARIANTS.forEach(function(v){html+='<button onclick="downloadPNG(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">↓</button>';});
+
+  // SVG
+  html += '<div style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;opacity:0.35;margin-bottom:6px;">SVG</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:'+(isAnimated?'12px':'0px')+';">';
+  html += '<button onclick="downloadSVGById(\'white-transparent\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">Download</button>';
   html += '</div>';
-  html += '<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;margin-bottom:4px;align-items:center;">';
-  html += '<div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:0.9;">SVG</div>';
-  VARIANTS.forEach(function(v){html+='<button onclick="downloadSVGById(\''+v.id+'\',\''+id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:pointer;border:1px solid #2a2a2a;color:#fff;background:#161616;">↓</button>';});
-  html += '</div>';
-  html += '<div style="display:grid;grid-template-columns:32px repeat(4,1fr);gap:4px;align-items:center;">';
-  html += '<div style="font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#fff;opacity:'+(gifBusy?0.4:0.9)+';">GIF</div>';
-  VARIANTS.forEach(function(v){html+='<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\''+v.id+'\',\''+name+'\');toggleDropdown(\''+id+'\')" style="padding:6px 0;text-align:center;font-family:Arial,sans-serif;font-size:9px;cursor:'+(gifBusy?'not-allowed':'pointer')+';border:1px solid #2a2a2a;color:#fff;background:#161616;opacity:'+(gifBusy?0.25:1)+';">'+(gifBusy?'...':'↓')+'</button>';});
-  html += '</div></div></div>';
+
+  // GIF — animated icons only
+  if(isAnimated) {
+    html += '<div style="font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;opacity:'+(gifBusy?0.2:0.35)+';margin-bottom:6px;">GIF</div>';
+    html += '<div style="display:flex;flex-direction:column;gap:4px;">';
+    html += '<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\'white-black\',\''+name+'\');toggleDropdown(\''+id+'\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:'+(gifBusy?'not-allowed':'pointer')+';border:1px solid #2a2a2a;color:#fff;background:#161616;opacity:'+(gifBusy?0.3:1)+';">'+(gifBusy?'Exporting...':'White on Black')+'</button>';
+    html += '<button '+(gifBusy?'disabled':'')+' onclick="handleGIFExport(\''+id+'\',\'black-white\',\''+name+'\');toggleDropdown(\''+id+'\')" style="width:100%;padding:7px 10px;text-align:left;font-family:Arial,sans-serif;font-size:8px;letter-spacing:0.8px;cursor:'+(gifBusy?'not-allowed':'pointer')+';border:1px solid #2a2a2a;color:#fff;background:#161616;opacity:'+(gifBusy?0.3:1)+';">'+(gifBusy?'Exporting...':'Black on White')+'</button>';
+    html += '</div>';
+  }
+
+  html += '</div></div>';
   return html;
 }
 
@@ -479,7 +487,7 @@ function render(){
     refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
     refCardsHtml+='<div style="width:48px;height:48px;">'+item.svg.replace('width="64" height="64"','width="48" height="48"')+'</div>';
     refCardsHtml+='<span style="font-size:7px;letter-spacing:1.2px;text-transform:uppercase;opacity:0.25;color:#fff;">'+item.label+'</span>';
-    refCardsHtml+=makeExportDropdown(item.key,item.label.toLowerCase());
+    refCardsHtml+=makeExportDropdown(item.key,item.label.toLowerCase(),true);
     refCardsHtml+='</div>';
   });
   refCardsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:14px 10px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:100px;">';
@@ -532,7 +540,7 @@ function render(){
       optionsHtml+='<div style="width:64px;height:64px;">'+opt.svg+'</div>';
       // Animate button
       optionsHtml+='<button onclick="animateOption('+opt.index+')" '+(isBusy?'disabled':'')+' style="width:100%;padding:8px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;cursor:'+(isBusy?'not-allowed':'pointer')+';border:1px solid #341C12;color:'+(isBusy?'#444':'#fff')+';background:#1a0e09;opacity:'+(isBusy?0.5:1)+';">'+(isBusy?'Animating...':'Animate')+'</button>';
-      // Static download options: PNG and copy SVG
+      // Static exports: PNG and copy SVG only
       optionsHtml+='<div style="display:flex;gap:6px;width:100%;">';
       optionsHtml+='<button onclick="downloadPNG(\'white-transparent\',\''+optId+'\',\'option-'+opt.index+'\')" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">PNG</button>';
       optionsHtml+='<button onclick="copyStaticSVG(\''+optId+'\',this)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Copy SVG</button>';
@@ -566,7 +574,7 @@ function render(){
       gridHtml+='<button onclick="handleFeedback('+icon.id+',-1)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===-1?'#2a1010':'#0f0f0f')+';">✕</button>';
       gridHtml+='</div>';
       gridHtml+='<button id="copy-btn-'+icon.id+'" onclick="handleCopy('+icon.id+')" style="padding:6px 0;width:100%;text-align:center;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#151515;">Copy SVG</button>';
-      gridHtml+=makeExportDropdown(icon.id,icon.prompt);
+      gridHtml+=makeExportDropdown(icon.id,icon.prompt,true);
       gridHtml+='</div>';
     });
     gridHtml+='</div>';
