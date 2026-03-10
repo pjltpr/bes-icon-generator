@@ -128,15 +128,22 @@ function loadProfile(){try{var s=localStorage.getItem('bes-icon-profile-v8');ret
 function saveProfile(){try{localStorage.setItem('bes-icon-profile-v8',JSON.stringify(profile));}catch(e){}}
 function resetProfile(){profile=JSON.parse(JSON.stringify(DEFAULT_PROFILE));saveProfile();render();}
 
+function findIcon(id) {
+  return animatedIcons.find(function(i){return i.id==id;}) ||
+         staticOptions.find(function(o){return o.id==id;}) ||
+         loadFavourites().find(function(f){return f.id==id;});
+}
+
 function handleFeedback(id, dir) {
-  var icon = animatedIcons.find(function(i){return i.id==id;});
+  var icon = findIcon(id);
   if(!icon) return;
+  var prompt = icon.prompt || icon.approach || currentSubject;
   if(dir===1){
-    profile.likedSubjects=Array.from(new Set([icon.prompt].concat(profile.likedSubjects))).slice(0,8);
-    profile.dislikedSubjects=profile.dislikedSubjects.filter(function(s){return s!==icon.prompt;});
+    profile.likedSubjects=Array.from(new Set([prompt].concat(profile.likedSubjects))).slice(0,8);
+    profile.dislikedSubjects=profile.dislikedSubjects.filter(function(s){return s!==prompt;});
   } else {
-    profile.dislikedSubjects=Array.from(new Set([icon.prompt].concat(profile.dislikedSubjects))).slice(0,8);
-    profile.likedSubjects=profile.likedSubjects.filter(function(s){return s!==icon.prompt;});
+    profile.dislikedSubjects=Array.from(new Set([prompt].concat(profile.dislikedSubjects))).slice(0,8);
+    profile.likedSubjects=profile.likedSubjects.filter(function(s){return s!==prompt;});
   }
   profile.feedbackLog=profile.feedbackLog.slice(-19).concat([{dir:dir,t:Date.now()}]);
   feedbackMap[id]=dir;
@@ -145,12 +152,7 @@ function handleFeedback(id, dir) {
 }
 
 function handleHeart(id) {
-  var icon = animatedIcons.find(function(i){ return i.id == id; });
-  // Also check favourites list itself (re-hearting from favs section)
-  if (!icon) {
-    var favs = loadFavourites();
-    icon = favs.find(function(f){ return f.id == id; });
-  }
+  var icon = findIcon(id);
   if (!icon) return;
   if (isFavourite(id)) {
     removeFavourite(id);
@@ -686,10 +688,22 @@ function render(){
     staticOptions.forEach(function(opt){
       var isBusy = !!animatingIndexes[opt.index];
       var optId = 'static-opt-'+opt.index;
+      // Give static options a stable id for feedback/heart
+      if(!opt.id) opt.id = 'sopt-'+opt.index+'-'+Date.now();
+      opt.prompt = currentSubject;
       storeSVG(optId, opt.svg);
-      optionsHtml+='<div style="background:#111;border:1px solid #1e1e1e;padding:20px 12px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;">';
+      storeSVG(opt.id, opt.svg);
+      var fb = feedbackMap[opt.id];
+      var faved = isFavourite(opt.id);
+      var border = fb===1?'#2E5038':fb===-1?'#3a1a1a':'#1e1e1e';
+      optionsHtml+='<div style="background:#111;border:1px solid '+border+';padding:20px 12px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;">';
       optionsHtml+='<div style="width:64px;height:64px;">'+opt.svg+'</div>';
       optionsHtml+='<button onclick="animateOption('+opt.index+')" '+(isBusy?'disabled':'')+' style="width:100%;padding:8px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1.5px;text-transform:uppercase;cursor:'+(isBusy?'not-allowed':'pointer')+';border:1px solid #341C12;color:'+(isBusy?'#444':'#fff')+';background:#1a0e09;opacity:'+(isBusy?0.5:1)+';">'+(isBusy?'Animating...':'Animate')+'</button>';
+      optionsHtml+='<div style="display:flex;gap:6px;width:100%;">';
+      optionsHtml+='<button onclick="handleFeedback(\''+opt.id+'\',1)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===1?'#1E3325':'#0f0f0f')+';">✓</button>';
+      optionsHtml+='<button onclick="handleFeedback(\''+opt.id+'\',-1)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid #222;color:#fff;background:'+(fb===-1?'#2a1010':'#0f0f0f')+';">✕</button>';
+      optionsHtml+='<button onclick="handleHeart(\''+opt.id+'\')" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:11px;cursor:pointer;border:1px solid '+(faved?'#2a1f10':'#222')+';color:'+(faved?'#c8743a':'#fff')+';background:'+(faved?'#1a0e05':'#0f0f0f')+';">♥</button>';
+      optionsHtml+='</div>';
       optionsHtml+='<div style="display:flex;gap:6px;width:100%;">';
       optionsHtml+='<button onclick="downloadPNG(\'white-transparent\',\''+optId+'\',\'option-'+opt.index+'\')" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">PNG</button>';
       optionsHtml+='<button onclick="copyStaticSVG(\''+optId+'\',this)" style="flex:1;padding:5px 0;font-family:Arial,sans-serif;font-size:7px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid #222;color:#fff;background:#0f0f0f;">Copy SVG</button>';
