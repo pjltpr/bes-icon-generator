@@ -535,8 +535,11 @@ async function animateOption(optionIndex) {
     try { data = JSON.parse(raw); } catch(e) { throw new Error('JSON parse failed: ' + raw.slice(0,100)); }
     if(data.error) throw new Error('API error: ' + data.error);
     var text = data.text || '';
+    console.log('RAW ANIMATE RESPONSE (first 600):', text.slice(0, 600));
     var svg = extractSVG(text);
-    if(!svg.includes('<svg')) throw new Error('No valid SVG in response.');
+    console.log('EXTRACTED SVG (first 300):', svg.slice(0, 300));
+    console.log('SVG valid:', svg.includes('<svg'));
+    if(!svg.includes('<svg')) throw new Error('No valid SVG in response. Raw start: ' + text.slice(0, 120));
     // Scope animation classes to prevent collisions
     svg = scopeSVGClasses(svg);
     var icon = { prompt: currentSubject, svg: svg, id: Date.now() + Math.random() };
